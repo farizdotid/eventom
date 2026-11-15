@@ -20,6 +20,7 @@ const ICONS = {
   bell: "M18 8.5a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6ZM10.5 18.5a1.8 1.8 0 0 0 3 0",
   panel: "M3 7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7Zm4 13V4",
   logout: "M9 21H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3h3m6 4 5 5-5 5m5-5H9",
+  chevron: "m6 9 6 6 6-6",
 } as const;
 
 type IconName = keyof typeof ICONS;
@@ -55,6 +56,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [userMenu, setUserMenu] = useState(false);
 
   const adminInisial = demoAdmin.name
     .split(" ")
@@ -144,16 +146,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               Salin Link
             </button>
           </div>
-
-          <form action={logout}>
-            <button
-              type="submit"
-              className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs text-[#8F8A9E] hover:bg-[#F7F4FF] hover:text-[#6D4AFF]"
-            >
-              <Icon name="logout" className="size-4" />
-              <span className={collapsed ? "lg:hidden" : ""}>Keluar</span>
-            </button>
-          </form>
         </div>
       </aside>
 
@@ -192,14 +184,52 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               <Icon name="bell" className="size-5" />
             </button>
             <div className="hidden h-8 w-px bg-[#EDE9F7] sm:block" />
-            <div className="flex items-center gap-2.5">
-              <span className="grid size-9 place-items-center rounded-full bg-[#F7DCCB] text-xs font-semibold text-[#9A5B33]">
-                {adminInisial}
-              </span>
-              <div className="hidden leading-tight sm:block">
-                <p className="text-sm font-medium">{demoAdmin.name}</p>
-                <p className="text-[11px] text-[#8F8A9E]">{demoAdmin.role}</p>
-              </div>
+            <div className="relative">
+              <button
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded={userMenu}
+                onClick={() => setUserMenu((value) => !value)}
+                className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-1.5 hover:bg-[#F7F4FF]"
+              >
+                <span className="grid size-9 place-items-center rounded-full bg-[#F7DCCB] text-xs font-semibold text-[#9A5B33]">
+                  {adminInisial}
+                </span>
+                <div className="hidden text-left leading-tight sm:block">
+                  <p className="text-sm font-medium">{demoAdmin.name}</p>
+                  <p className="text-[11px] text-[#8F8A9E]">{demoAdmin.role}</p>
+                </div>
+                <Icon name="chevron" className="hidden size-3.5 text-[#A8A3B5] sm:block" />
+              </button>
+
+              {userMenu && (
+                <>
+                  <button
+                    type="button"
+                    aria-label="Tutup menu"
+                    onClick={() => setUserMenu(false)}
+                    className="fixed inset-0 z-20 cursor-default"
+                  />
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-full z-30 mt-2 w-48 rounded-xl border border-[#EDE9F7] bg-white p-1.5 shadow-lg shadow-[#171321]/5"
+                  >
+                    <div className="px-2.5 py-2 leading-tight sm:hidden">
+                      <p className="text-sm font-medium">{demoAdmin.name}</p>
+                      <p className="text-[11px] text-[#8F8A9E]">{demoAdmin.role}</p>
+                    </div>
+                    <form action={logout}>
+                      <button
+                        type="submit"
+                        className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm text-[#3B3647] hover:bg-[#F7F4FF] hover:text-[#6D4AFF]"
+                      >
+                        <Icon name="logout" className="size-4" />
+                        Keluar
+                      </button>
+                    </form>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </header>

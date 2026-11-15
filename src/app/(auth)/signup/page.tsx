@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { AUTH_INPUT, AuthShell } from "@/components/auth-shell";
 import { signup } from "../login/actions";
 
 // Shows `?error=` / `?message=` set by the signup action.
@@ -13,14 +14,20 @@ async function Feedback({
 
   if (error) {
     return (
-      <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
+      <p
+        role="alert"
+        className="mb-4 rounded-xl border border-[#F6C9C9] bg-[#FDF0F0] px-4 py-3 text-sm text-[#B42318]"
+      >
         {error}
       </p>
     );
   }
   if (message) {
     return (
-      <p role="status" className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950 dark:text-green-300">
+      <p
+        role="status"
+        className="mb-4 rounded-xl border border-[#BFE7CE] bg-[#F0FAF3] px-4 py-3 text-sm text-[#16794A]"
+      >
         {message}
       </p>
     );
@@ -30,53 +37,67 @@ async function Feedback({
 
 export default function SignupPage({ searchParams }: PageProps<"/signup">) {
   return (
-    <main className="flex flex-1 items-center justify-center px-4">
-      <form action={signup} className="w-full max-w-sm space-y-4">
-        <h1 className="text-2xl font-semibold">Create account</h1>
+    <AuthShell
+      title="Buat akun panitia"
+      description="Gratis untuk satu event pertamamu."
+      footer={
+        <>
+          Sudah punya akun?{" "}
+          <Link
+            href="/login"
+            className="font-medium text-[#6D4AFF] underline-offset-4 hover:underline"
+          >
+            Masuk
+          </Link>
+        </>
+      }
+    >
+      <Suspense>
+        <Feedback
+          searchParams={searchParams as Promise<{ error?: string; message?: string }>}
+        />
+      </Suspense>
 
-        <Suspense>
-          <Feedback
-            searchParams={searchParams as Promise<{ error?: string; message?: string }>}
-          />
-        </Suspense>
-
-        <label className="block space-y-1 text-sm">
-          <span>Email</span>
+      <form action={signup} className="space-y-4">
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-medium text-[#6B6578]">Email</span>
           <input
             name="email"
             type="email"
             required
             autoComplete="email"
-            className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700"
+            placeholder="nama@email.com"
+            className={AUTH_INPUT}
           />
         </label>
 
-        <label className="block space-y-1 text-sm">
-          <span>Password</span>
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-medium text-[#6B6578]">
+            Password
+          </span>
           <input
             name="password"
             type="password"
             required
             minLength={6}
             autoComplete="new-password"
-            className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700"
+            placeholder="Minimal 6 karakter"
+            className={AUTH_INPUT}
           />
         </label>
 
         <button
           type="submit"
-          className="w-full rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background hover:opacity-90"
+          className="w-full rounded-xl bg-[#6D4AFF] py-3 text-sm font-semibold text-white transition hover:bg-[#5B3AEB] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#6D4AFF]/30 active:translate-y-px"
         >
-          Sign up
+          Buat akun
         </button>
-
-        <p className="text-center text-sm text-zinc-600 dark:text-zinc-400">
-          Already have an account?{" "}
-          <Link href="/login" className="font-medium underline">
-            Sign in
-          </Link>
-        </p>
       </form>
-    </main>
+
+      <p className="mt-5 text-[11px] leading-relaxed text-[#A8A3B5]">
+        Di mode demo, signup hanya menerima data tanpa disimpan. Akun asli butuh
+        koneksi Supabase.
+      </p>
+    </AuthShell>
   );
 }
