@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { demoLanding, type LandingData } from "@/lib/demo-data";
+import { mergeLanding } from "@/lib/landing";
 import type { Database } from "@/types/database.types";
 
 export type Event = Database["public"]["Tables"]["events"]["Row"];
@@ -37,17 +38,5 @@ export const getMyEvent = cache(async (): Promise<Event | null> => {
 export const getLanding = cache(async (): Promise<LandingData> => {
   const event = await getMyEvent();
   const saved = ((event?.config ?? {}) as EventConfig).landing;
-  if (!saved) return demoLanding;
-
-  return {
-    ...demoLanding,
-    ...saved,
-    event: { ...demoLanding.event, ...saved.event },
-    about: { ...demoLanding.about, ...saved.about },
-    speaker: { ...demoLanding.speaker, ...saved.speaker },
-    registration: { ...demoLanding.registration, ...saved.registration },
-    fields: { ...demoLanding.fields, ...saved.fields },
-    sections: { ...demoLanding.sections, ...saved.sections },
-    agenda: saved.agenda ?? demoLanding.agenda,
-  };
+  return saved ? mergeLanding(saved) : demoLanding;
 });

@@ -3,11 +3,15 @@ import { DashboardGuard } from "@/components/dashboard-guard";
 import { LandingEditor } from "@/components/landing-editor";
 import { isDemoMode } from "@/lib/demo";
 import { demoLanding } from "@/lib/demo-data";
-import { getLanding } from "@/lib/supabase/queries/events";
+import { getLanding, getMyEvent } from "@/lib/supabase/queries/events";
 
 async function LandingContent() {
-  const data = isDemoMode() ? demoLanding : await getLanding();
-  return <LandingEditor initialData={data} />;
+  if (isDemoMode()) {
+    return <LandingEditor initialData={demoLanding} slug="uiux-batch-3" />;
+  }
+
+  const [data, event] = await Promise.all([getLanding(), getMyEvent()]);
+  return <LandingEditor initialData={data} slug={event?.slug} />;
 }
 
 export default function LandingPageSetup() {

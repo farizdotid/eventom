@@ -149,6 +149,16 @@ export type Database = {
         Args: { p_code: string };
         Returns: Json;
       };
+      register_participant: {
+        Args: {
+          p_slug: string;
+          p_name: string;
+          p_email: string;
+          p_org?: string | null;
+          p_phone?: string | null;
+        };
+        Returns: Json;
+      };
     };
     Enums: {
       [_ in never]: never;

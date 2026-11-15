@@ -15,7 +15,13 @@ const CARD = "rounded-2xl border border-[#EDE9F7] bg-white p-5";
 const INP =
   "w-full rounded-lg border border-[#EDE9F7] bg-white px-3 py-2.5 text-sm outline-none placeholder:text-[#A8A3B5] focus:border-[#C9B6FF]";
 
-export function LandingEditor({ initialData = demoLanding }: { initialData?: LandingData }) {
+export function LandingEditor({
+  initialData = demoLanding,
+  slug,
+}: {
+  initialData?: LandingData;
+  slug?: string;
+}) {
   const [data, setData] = useState<LandingData>(initialData);
   const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
   const [pending, startTransition] = useTransition();
@@ -83,6 +89,16 @@ export function LandingEditor({ initialData = demoLanding }: { initialData?: Lan
             >
               {notice.text}
             </span>
+          )}
+          {slug && (
+            <a
+              href={`/e/${slug}`}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-[#EDE9F7] bg-white px-4 py-2 text-sm font-medium text-[#3B3647] hover:bg-[#FBFAFE]"
+            >
+              Lihat halaman
+            </a>
           )}
           <button
             type="button"

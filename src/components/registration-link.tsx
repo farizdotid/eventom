@@ -3,16 +3,16 @@ import { isDemoMode } from "@/lib/demo";
 import { demoEvent } from "@/lib/demo-data";
 import { getMyEvent } from "@/lib/supabase/queries/events";
 
-type EventConfig = { registration_url?: string };
-
-/** Kartu link pendaftaran di sidebar; diambil dari events.config. */
+/** Kartu link pendaftaran di sidebar: halaman publik /e/<slug>. */
 export async function RegistrationLink() {
   if (isDemoMode()) return <LinkCard url={demoEvent.registrationUrl} />;
 
   const event = await getMyEvent();
-  const config = (event?.config ?? {}) as EventConfig;
+  if (!event) return <LinkCard url="" />;
 
-  return <LinkCard url={config.registration_url ?? ""} />;
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+
+  return <LinkCard url={`${base}/e/${event.slug}`} />;
 }
 
 function LinkCard({ url }: { url: string }) {
