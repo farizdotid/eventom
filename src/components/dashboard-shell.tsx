@@ -46,7 +46,7 @@ type NavItem = { label: string; icon: IconName; href?: string };
 const NAV: NavItem[] = [
   { label: "Ringkasan", icon: "ringkasan", href: "/dashboard" },
   { label: "Landing Page", icon: "landing", href: "/dashboard/landing" },
-  { label: "Peserta", icon: "peserta" },
+  { label: "Peserta", icon: "peserta", href: "/dashboard/peserta" },
   { label: "Presensi", icon: "presensi" },
   { label: "Sertifikat", icon: "sertifikat" },
 ];

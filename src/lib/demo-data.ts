@@ -119,6 +119,65 @@ export const demoLanding: LandingData = {
   sections: { quota: true, countdown: true, agenda: true, speaker: true },
 };
 
+export type ParticipantStatus = "Hadir" | "Terlambat" | "Belum hadir";
+
+export type Participant = {
+  id: number;
+  name: string;
+  email: string;
+  org: string;
+  code: string;
+  phone: string;
+  registeredAt: string;
+  status: ParticipantStatus;
+};
+
+const PARTICIPANT_NAMES: [string, string][] = [
+  ["Bagas", "Saputra"], ["Nadia", "Anjani"], ["Fajar", "Firmansyah"],
+  ["Laras", "Lestari"], ["Yoga", "Santoso"], ["Citra", "Maharani"],
+  ["Rizky", "Wijaya"], ["Dewi", "Putri"], ["Ahmad", "Fauzi"],
+  ["Putri", "Kartika"], ["Salsa", "Anggraini"], ["Reza", "Hidayat"],
+  ["Nabila", "Rahmawati"], ["Wahyu", "Ramadhan"], ["Intan", "Permatasari"],
+  ["Dimas", "Pratama"], ["Ayu", "Safitri"], ["Bayu", "Nugroho"],
+  ["Maya", "Sari"], ["Fikri", "Maulana"], ["Rani", "Oktaviani"],
+  ["Galih", "Prakoso"], ["Sinta", "Wulandari"], ["Arif", "Setiawan"],
+];
+
+const PARTICIPANT_ORGS = [
+  "Universitas Gadjah Mada", "ITB", "Agensi Kreatif Rupa",
+  "Universitas Indonesia", "Universitas Brawijaya", "PT Telkom Indonesia",
+  "Bank Mandiri", "Binus University", "Startup Kopi Kita",
+  "Pemprov Jawa Barat", "Tokopedia", "Universitas Airlangga",
+];
+
+const ABSENT_ROWS = new Set([3, 8, 13, 18, 23, 28, 33, 38, 43]);
+const LATE_ROWS = new Set([0, 5, 10, 15, 20, 25]);
+
+export const demoParticipants: Participant[] = Array.from(
+  { length: 48 },
+  (_, i) => {
+    const [first, last] = PARTICIPANT_NAMES[i % PARTICIPANT_NAMES.length];
+    const suffix = i < PARTICIPANT_NAMES.length ? "" : " Putra";
+    const name = `${first} ${last}${suffix}`;
+    const registeredAt = new Date(Date.UTC(2026, 9, 1) + i * 9 * 3_600_000);
+
+    return {
+      id: i + 1,
+      name,
+      email: `${first.toLowerCase()}.${last.toLowerCase()}${suffix ? "2" : ""}@mail.com`,
+      org: PARTICIPANT_ORGS[i % PARTICIPANT_ORGS.length],
+      code: `UX3-${(i * 997 + 3127).toString(36).toUpperCase().padStart(4, "0")}`,
+      phone: `0812-${1000 + i * 37}-${1000 + i * 53}`,
+      registeredAt: registeredAt.toISOString(),
+      status: ABSENT_ROWS.has(i)
+        ? "Belum hadir"
+        : LATE_ROWS.has(i)
+          ? "Terlambat"
+          : "Hadir",
+    };
+  },
+);
+
 export const demoEnrollment = [
   { day: "16", total: 5 },
   { day: "17", total: 8 },

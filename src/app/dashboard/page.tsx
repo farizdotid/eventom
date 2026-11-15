@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
 import { AttendanceDonut, EnrollmentTrend, SparkBars } from "@/components/dashboard-charts";
+import { DashboardGuard } from "@/components/dashboard-guard";
 import {
   demoAttendance,
   demoCertificate,
@@ -9,7 +9,6 @@ import {
   demoEvent,
   demoRegistrants,
 } from "@/lib/demo-data";
-import { getCurrentUser } from "@/lib/auth";
 
 const CARD = "rounded-2xl border border-[#EDE9F7] bg-white p-5";
 const LINK = "text-sm font-medium text-[#6D4AFF]";
@@ -21,13 +20,6 @@ const AVATARS = [
   "bg-[#DCFCE7] text-[#15803D]",
   "bg-[#FEF3C7] text-[#B45309]",
 ];
-
-// Reads cookies, so it lives inside <Suspense>.
-async function AuthGuard() {
-  const user = await getCurrentUser();
-  if (!user) redirect("/login");
-  return null;
-}
 
 function initials(name: string) {
   return name
@@ -44,13 +36,12 @@ export default function DashboardPage() {
   const enrollmentTotal = demoEnrollment.reduce((sum, day) => sum + day.total, 0);
 
   return (
-    <>
+    <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-5">
       <Suspense fallback={null}>
-        <AuthGuard />
+        <DashboardGuard />
       </Suspense>
 
-      <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-[26px] font-semibold tracking-tight">Ringkasan</h1>
           <div className="flex items-center gap-2 rounded-full border border-[#EDE9F7] bg-white py-1.5 pl-3 pr-1.5 text-sm">
             <span className="size-2 rounded-full bg-[#22C55E]" />
@@ -213,7 +204,6 @@ export default function DashboardPage() {
             </div>
           </section>
         </div>
-      </div>
-    </>
+    </div>
   );
 }
