@@ -48,7 +48,7 @@ const NAV: NavItem[] = [
   { label: "Landing Page", icon: "landing", href: "/dashboard/landing" },
   { label: "Peserta", icon: "peserta", href: "/dashboard/peserta" },
   { label: "Presensi", icon: "presensi", href: "/dashboard/presensi" },
-  { label: "Sertifikat", icon: "sertifikat" },
+  { label: "Sertifikat", icon: "sertifikat", href: "/dashboard/sertifikat" },
 ];
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {

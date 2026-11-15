@@ -34,6 +34,66 @@ export const demoCertificate = {
   signatures: 2,
 };
 
+export type CertificateTemplate = "modern" | "klasik" | "minimal";
+
+export const CERTIFICATE_TEMPLATES: {
+  id: CertificateTemplate;
+  label: string;
+  accent: string;
+  background: string;
+}[] = [
+  {
+    id: "modern",
+    label: "Modern Lilac",
+    accent: "#6D4AFF",
+    background: "linear-gradient(135deg,#FDFBFF,#F5ECFF 55%,#FDF3FA)",
+  },
+  {
+    id: "klasik",
+    label: "Klasik",
+    accent: "#8A6A3B",
+    background: "linear-gradient(135deg,#FDFAF2,#F7EEDC)",
+  },
+  {
+    id: "minimal",
+    label: "Minimal",
+    accent: "#171321",
+    background: "linear-gradient(135deg,#FFFFFF,#F6F5FA)",
+  },
+];
+
+export type CertificateConfig = {
+  template: CertificateTemplate;
+  title: string;
+  intro: string;
+  description: string;
+  numberFormat: string;
+  issueDate: string;
+  signers: { name: string; role: string }[];
+  rules: { attendedOnly: boolean; selfDownload: boolean; showVerification: boolean };
+};
+
+export const demoCertificateConfig: CertificateConfig = {
+  template: "modern",
+  title: "Sertifikat Kehadiran",
+  intro: "Diberikan kepada",
+  description:
+    "atas partisipasinya sebagai Peserta dalam Workshop UI/UX Batch 3 yang diselenggarakan pada 29 Oktober 2026 di Yogyakarta.",
+  numberFormat: "UX3/{no}/X/2026",
+  issueDate: "Yogyakarta, 31 Oktober 2026",
+  signers: [
+    { name: "Dimas Prasetyo", role: "Trainer" },
+    { name: "Rina Anggraini", role: "Ketua Panitia" },
+  ],
+  rules: { attendedOnly: true, selfDownload: true, showVerification: true },
+};
+
+export const demoCertificateSample = {
+  name: "Nadia Putri",
+  number: "0042",
+  code: "UX3-4BX9",
+};
+
 export const demoCheckins = [
   { id: 1, name: "Salsa Lestari", org: "Tokopedia", time: "09:40", status: "Terlambat" },
   { id: 2, name: "Nabila Maharani", org: "Pemprov Jawa Barat", time: "09:26", status: "Terlambat" },
