@@ -1,10 +1,11 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database.types";
 
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 /** Profil panitia yang sedang login, atau null kalau belum login. */
-export async function getProfile(): Promise<Profile | null> {
+export const getProfile = cache(async (): Promise<Profile | null> => {
   const supabase = await createClient();
 
   const {
@@ -19,4 +20,4 @@ export async function getProfile(): Promise<Profile | null> {
     .maybeSingle();
 
   return data;
-}
+});

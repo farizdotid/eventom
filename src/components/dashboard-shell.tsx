@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { logout } from "@/app/(auth)/login/actions";
-import { demoAdmin, demoEvent } from "@/lib/demo-data";
 
 const ICONS = {
   ringkasan:
@@ -52,16 +51,116 @@ const NAV: NavItem[] = [
   { label: "Sertifikat", icon: "sertifikat", href: "/dashboard/sertifikat" },
 ];
 
-export function DashboardShell({ children }: { children: React.ReactNode }) {
+const ROLE_LABEL: Record<string, string> = {
+  owner: "Pemilik Event",
+  admin: "Event Admin",
+  staff: "Staff",
+};
+
+/** Tombol akun di topbar: nama + email user login, dan form logout. */
+export function UserMenu({
+  name,
+  role,
+  email,
+}: {
+  name: string;
+  role: string;
+  email: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const initial = name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+        className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-1.5 hover:bg-[#F7F4FF]"
+      >
+        <span className="grid size-9 place-items-center rounded-full bg-[#F7DCCB] text-xs font-semibold text-[#9A5B33]">
+          {initial}
+        </span>
+        <div className="hidden text-left leading-tight sm:block">
+          <p className="max-w-[160px] truncate text-sm font-medium">{name}</p>
+          <p className="text-[11px] text-[#8F8A9E]">{ROLE_LABEL[role] ?? role}</p>
+        </div>
+        <Icon name="chevron" className="hidden size-3.5 text-[#A8A3B5] sm:block" />
+      </button>
+
+      {open && (
+        <>
+          <button
+            type="button"
+            aria-label="Tutup menu"
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 z-20 cursor-default"
+          />
+          <div
+            role="menu"
+            className="absolute right-0 top-full z-30 mt-2 w-56 rounded-xl border border-[#EDE9F7] bg-white p-1.5 shadow-lg shadow-[#171321]/5"
+          >
+            <div className="px-2.5 py-2 leading-tight">
+              <p className="truncate text-sm font-medium">{name}</p>
+              <p className="truncate text-[11px] text-[#8F8A9E]">{email}</p>
+            </div>
+            <form action={logout}>
+              <button
+                type="submit"
+                className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm text-[#3B3647] hover:bg-[#F7F4FF] hover:text-[#6D4AFF]"
+              >
+                <Icon name="logout" className="size-4" />
+                Keluar
+              </button>
+            </form>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/** Tombol salin ke clipboard untuk link pendaftaran di sidebar. */
+export function CopyButton({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false);
+
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(value);
+          setCopied(true);
+          window.setTimeout(() => setCopied(false), 1500);
+        } catch {
+          // Clipboard diblokir browser (non-HTTPS): biarkan, user bisa salin manual.
+        }
+      }}
+      className="mt-2.5 w-full rounded-lg bg-white py-2 text-xs font-medium text-[#6D4AFF] hover:bg-white/70"
+    >
+      {copied ? "Tersalin" : "Salin Link"}
+    </button>
+  );
+}
+
+export function DashboardShell({
+  children,
+  userMenu,
+  footer,
+}: {
+  children: React.ReactNode;
+  userMenu?: React.ReactNode;
+  footer?: React.ReactNode;
+}) {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [userMenu, setUserMenu] = useState(false);
-
-  const adminInisial = demoAdmin.name
-    .split(" ")
-    .map((part) => part[0])
-    .join("");
 
   return (
     <div className="flex min-h-screen bg-[#F7F5FB] text-[#171321]">
@@ -127,25 +226,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        <div className="mt-auto flex flex-col gap-3">
-          <div className="rounded-xl bg-[#F6F0FF] p-3.5">
-            <p className={`text-[11px] text-[#8F8A9E] ${collapsed ? "lg:hidden" : ""}`}>
-              Link pendaftaran
-            </p>
-            <p
-              className={`mt-0.5 truncate text-xs font-medium ${collapsed ? "lg:hidden" : ""}`}
-            >
-              {demoEvent.registrationUrl}
-            </p>
-            <button
-              type="button"
-              className={`mt-2.5 w-full rounded-lg bg-white py-2 text-xs font-medium text-[#6D4AFF] hover:bg-white/70 ${
-                collapsed ? "lg:hidden" : ""
-              }`}
-            >
-              Salin Link
-            </button>
-          </div>
+        <div className={`mt-auto flex flex-col gap-3 ${collapsed ? "lg:hidden" : ""}`}>
+          {footer}
         </div>
       </aside>
 
@@ -187,53 +269,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               <Icon name="bell" className="size-5" />
             </button>
             <div className="hidden h-8 w-px bg-[#EDE9F7] sm:block" />
-            <div className="relative">
-              <button
-                type="button"
-                aria-haspopup="menu"
-                aria-expanded={userMenu}
-                onClick={() => setUserMenu((value) => !value)}
-                className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-1.5 hover:bg-[#F7F4FF]"
-              >
-                <span className="grid size-9 place-items-center rounded-full bg-[#F7DCCB] text-xs font-semibold text-[#9A5B33]">
-                  {adminInisial}
-                </span>
-                <div className="hidden text-left leading-tight sm:block">
-                  <p className="text-sm font-medium">{demoAdmin.name}</p>
-                  <p className="text-[11px] text-[#8F8A9E]">{demoAdmin.role}</p>
-                </div>
-                <Icon name="chevron" className="hidden size-3.5 text-[#A8A3B5] sm:block" />
-              </button>
-
-              {userMenu && (
-                <>
-                  <button
-                    type="button"
-                    aria-label="Tutup menu"
-                    onClick={() => setUserMenu(false)}
-                    className="fixed inset-0 z-20 cursor-default"
-                  />
-                  <div
-                    role="menu"
-                    className="absolute right-0 top-full z-30 mt-2 w-48 rounded-xl border border-[#EDE9F7] bg-white p-1.5 shadow-lg shadow-[#171321]/5"
-                  >
-                    <div className="px-2.5 py-2 leading-tight sm:hidden">
-                      <p className="text-sm font-medium">{demoAdmin.name}</p>
-                      <p className="text-[11px] text-[#8F8A9E]">{demoAdmin.role}</p>
-                    </div>
-                    <form action={logout}>
-                      <button
-                        type="submit"
-                        className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm text-[#3B3647] hover:bg-[#F7F4FF] hover:text-[#6D4AFF]"
-                      >
-                        <Icon name="logout" className="size-4" />
-                        Keluar
-                      </button>
-                    </form>
-                  </div>
-                </>
-              )}
-            </div>
+            {userMenu}
           </div>
         </header>
 
