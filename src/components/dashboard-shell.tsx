@@ -153,10 +153,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-[#EDE9F7] bg-white/85 px-4 py-3 backdrop-blur sm:px-6">
           <button
             type="button"
-            aria-label="Ubah lebar menu"
+            aria-label={drawerOpen ? "Tutup menu" : "Buka menu"}
             onClick={() => {
-              setCollapsed((value) => !value);
-              setDrawerOpen((value) => !value);
+              if (window.matchMedia("(min-width: 1024px)").matches) {
+                setCollapsed((value) => !value);
+              } else {
+                setDrawerOpen((value) => !value);
+              }
             }}
             className="grid size-9 shrink-0 place-items-center rounded-lg border border-[#EDE9F7] text-[#8F8A9E] hover:text-[#6D4AFF]"
           >

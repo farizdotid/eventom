@@ -240,23 +240,25 @@ export function LandingEditor() {
             <div className="mt-3 flex flex-col gap-2">
               {data.agenda.map((session) => (
                 <div key={session.id} className="flex flex-wrap items-center gap-2">
-                  <input
-                    type="time"
-                    aria-label={`Jam mulai ${session.title}`}
-                    className={`${INP} w-[6.5rem]`}
-                    value={session.start}
-                    onChange={(e) => patchAgenda(session.id, "start", e.target.value)}
-                  />
-                  <input
-                    type="time"
-                    aria-label={`Jam selesai ${session.title}`}
-                    className={`${INP} w-[6.5rem]`}
-                    value={session.end}
-                    onChange={(e) => patchAgenda(session.id, "end", e.target.value)}
-                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="time"
+                      aria-label={`Jam mulai ${session.title}`}
+                      className={`${INP} w-[6.5rem]`}
+                      value={session.start}
+                      onChange={(e) => patchAgenda(session.id, "start", e.target.value)}
+                    />
+                    <input
+                      type="time"
+                      aria-label={`Jam selesai ${session.title}`}
+                      className={`${INP} w-[6.5rem]`}
+                      value={session.end}
+                      onChange={(e) => patchAgenda(session.id, "end", e.target.value)}
+                    />
+                  </div>
                   <input
                     aria-label="Judul sesi"
-                    className={`${INP} min-w-0 flex-1`}
+                    className={`${INP} min-w-0 flex-1 basis-40`}
                     value={session.title}
                     onChange={(e) => patchAgenda(session.id, "title", e.target.value)}
                   />

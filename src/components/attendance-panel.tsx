@@ -139,7 +139,7 @@ export function AttendancePanel() {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2 xl:items-start">
-        <div className="flex flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-4">
           <section className="rounded-2xl border border-[#EDE9F7] bg-white p-5">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold">QR Presensi</h2>
@@ -247,7 +247,7 @@ export function AttendancePanel() {
           </section>
         </div>
 
-        <section className="rounded-2xl border border-[#EDE9F7] bg-white p-5">
+        <section className="min-w-0 rounded-2xl border border-[#EDE9F7] bg-white p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <h2 className="font-semibold">Log Presensi</h2>
@@ -316,15 +316,16 @@ export function AttendancePanel() {
       </div>
 
       {fullscreen && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-white">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-white p-6">
           <QRCodeSVG
             value={qrValue}
             size={320}
             bgColor="#FFFFFF"
             fgColor="#171321"
             level="M"
+            className="h-auto w-full max-w-[320px]"
           />
-          <p className="text-sm font-medium">eventom.id/checkin/uiux-b3</p>
+          <p className="text-center text-sm font-medium">eventom.id/checkin/uiux-b3</p>
           <button
             type="button"
             onClick={() => setFullscreen(false)}

@@ -21,7 +21,7 @@ function CertificatePreview({ config }: { config: CertificateConfig }) {
 
   return (
     <div
-      className="relative flex min-h-[360px] flex-col items-center justify-center overflow-hidden rounded-xl px-6 py-7 text-center"
+      className="relative flex min-h-[360px] flex-col items-center justify-center overflow-hidden rounded-xl px-5 py-6 pb-16 text-center sm:px-6 sm:py-7 sm:pb-16"
       style={{ background: theme.background }}
     >
       <div className="flex items-center justify-center gap-3">
@@ -68,10 +68,10 @@ function CertificatePreview({ config }: { config: CertificateConfig }) {
 
       <p className="mt-3 text-[8px] text-[#8F8A9E]">{config.issueDate}</p>
 
-      <div className="mt-4 flex items-center justify-center gap-10">
+      <div className="mt-4 flex items-center justify-center gap-4 sm:gap-10">
         {config.signers.map((signer) => (
           <div key={signer.name} className="text-center">
-            <div className="grid h-10 w-24 place-items-center rounded-md border border-dashed border-[#C9BFDC] text-[8px] text-[#8F8A9E]">
+            <div className="grid h-10 w-20 place-items-center rounded-md border border-dashed border-[#C9BFDC] text-[8px] text-[#8F8A9E] sm:w-24">
               TTD
             </div>
             <p className="mt-1.5 text-[8px] font-semibold">{signer.name}</p>

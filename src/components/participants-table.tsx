@@ -127,39 +127,39 @@ export function ParticipantsTable() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[820px] text-sm">
+        <table className="w-full text-sm lg:min-w-[820px]">
           <thead>
             <tr className="border-y border-[#F3F0FA] bg-[#FCFBFE] text-left text-[10px] uppercase tracking-wide text-[#A8A3B5]">
-              <th className="w-10 py-2.5 pl-4">
+              <th className="hidden w-10 py-2.5 pl-4 sm:table-cell">
                 <input type="checkbox" aria-label="Pilih semua peserta" className="size-3.5 rounded border-[#D9D3E8]" />
               </th>
-              <th className="py-2.5 font-medium">Peserta</th>
-              <th className="py-2.5 font-medium">Instansi</th>
-              <th className="py-2.5 font-medium">Kode unik</th>
-              <th className="py-2.5 font-medium">No. HP</th>
-              <th className="py-2.5 font-medium">Tgl daftar</th>
+              <th className="py-2.5 pl-4 font-medium sm:pl-0">Peserta</th>
+              <th className="hidden py-2.5 font-medium md:table-cell">Instansi</th>
+              <th className="hidden py-2.5 font-medium lg:table-cell">Kode unik</th>
+              <th className="hidden py-2.5 font-medium xl:table-cell">No. HP</th>
+              <th className="hidden py-2.5 font-medium sm:table-cell">Tgl daftar</th>
               <th className="py-2.5 font-medium">Kehadiran</th>
-              <th className="py-2.5 pr-4 text-right font-medium">Sertifikat</th>
+              <th className="hidden py-2.5 pr-4 text-right font-medium sm:table-cell">Sertifikat</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((person) => (
               <tr key={person.id} className="border-b border-[#F6F3FC]">
-                <td className="py-3 pl-4">
+                <td className="hidden py-3 pl-4 sm:table-cell">
                   <input
                     type="checkbox"
                     aria-label={`Pilih ${person.name}`}
                     className="size-3.5 rounded border-[#D9D3E8]"
                   />
                 </td>
-                <td className="py-3 pr-4">
+                <td className="py-3 pl-4 pr-3 sm:pl-0 sm:pr-4">
                   <div className="flex items-center gap-2.5">
                     <span
                       className={`grid size-8 shrink-0 place-items-center rounded-full text-[10px] font-semibold ${AVATARS[person.id % AVATARS.length]}`}
                     >
                       {initials(person.name)}
                     </span>
-                    <div className="min-w-0">
+                    <div className="min-w-0 max-w-[170px] sm:max-w-none">
                       <p className="truncate font-medium">{person.name}</p>
                       <p className="truncate text-xs text-[#8F8A9E]">{person.email}</p>
                     </div>
@@ -176,31 +176,32 @@ export function ParticipantsTable() {
                 <td className="hidden py-3 pr-4 text-xs text-[#4B4657] xl:table-cell">
                   {person.phone}
                 </td>
-                <td className="py-3 pr-4 whitespace-nowrap">
+                <td className="hidden whitespace-nowrap py-3 pr-4 sm:table-cell">
                   <p className="text-xs">{dateFormat.format(new Date(person.registeredAt))}</p>
                   <p className="text-[11px] text-[#8F8A9E]">
                     {timeFormat.format(new Date(person.registeredAt))} WIB
                   </p>
                 </td>
-                <td className="py-3 pr-4">
+                <td className="py-3 pr-3 sm:pr-4">
                   <span
                     className={`inline-block rounded-md px-2 py-1 text-[11px] font-medium ${STATUS_STYLE[person.status]}`}
                   >
                     {person.status}
                   </span>
                 </td>
-                <td className="py-3 pr-4 text-right">
+                <td className="hidden py-3 pr-4 text-right sm:table-cell">
                   {person.status === "Belum hadir" ? (
                     <span className="text-[11px] text-[#A8A3B5]">Belum tersedia</span>
                   ) : (
                     <button
                       type="button"
+                      aria-label={`Unduh sertifikat ${person.name}`}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-[#EDE9F7] bg-white px-2.5 py-1.5 text-[11px] font-medium text-[#6D4AFF] hover:bg-[#F7F4FF]"
                     >
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="size-3.5" aria-hidden>
                         <path d="M12 4v10m0 0 4-4m-4 4-4-4M5 19h14" />
                       </svg>
-                      Unduh
+                      <span className="hidden sm:inline">Unduh</span>
                     </button>
                   )}
                 </td>
@@ -222,7 +223,7 @@ export function ParticipantsTable() {
         <p className="text-xs text-[#8F8A9E]">
           Menampilkan {firstRow}–{lastRow} dari {filtered.length} peserta
         </p>
-        <div className="flex items-center gap-1 text-xs">
+        <div className="flex flex-wrap items-center gap-1 text-xs">
           <button
             type="button"
             onClick={() => setPage((value) => Math.max(1, value - 1))}

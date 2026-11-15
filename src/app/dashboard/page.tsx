@@ -10,7 +10,7 @@ import {
   demoRegistrants,
 } from "@/lib/demo-data";
 
-const CARD = "rounded-2xl border border-[#EDE9F7] bg-white p-5";
+const CARD = "min-w-0 rounded-2xl border border-[#EDE9F7] bg-white p-5";
 const LINK = "text-sm font-medium text-[#6D4AFF]";
 
 const AVATARS = [
@@ -52,7 +52,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <section className={CARD}>
             <div className="flex items-center justify-between">
               <h2 className="font-semibold">Pendaftar</h2>
@@ -117,7 +117,7 @@ export default function DashboardPage() {
             </div>
           </section>
 
-          <section className={CARD}>
+          <section className={`${CARD} md:col-span-2 xl:col-span-1`}>
             <div className="flex items-center justify-between">
               <h2 className="font-semibold">Sertifikat</h2>
               <span className={LINK}>Atur</span>
@@ -151,7 +151,7 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 xl:items-start">
           <section className={CARD}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
