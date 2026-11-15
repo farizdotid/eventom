@@ -129,6 +129,7 @@ export type Participant = {
   code: string;
   phone: string;
   registeredAt: string;
+  checkedInAt: string | null;
   status: ParticipantStatus;
 };
 
@@ -153,6 +154,8 @@ const PARTICIPANT_ORGS = [
 const ABSENT_ROWS = new Set([3, 8, 13, 18, 23, 28, 33, 38, 43]);
 const LATE_ROWS = new Set([0, 5, 10, 15, 20, 25]);
 
+const pad = (value: number) => String(value).padStart(2, "0");
+
 export const demoParticipants: Participant[] = Array.from(
   { length: 48 },
   (_, i) => {
@@ -160,6 +163,11 @@ export const demoParticipants: Participant[] = Array.from(
     const suffix = i < PARTICIPANT_NAMES.length ? "" : " Putra";
     const name = `${first} ${last}${suffix}`;
     const registeredAt = new Date(Date.UTC(2026, 9, 1) + i * 9 * 3_600_000);
+    const status: ParticipantStatus = ABSENT_ROWS.has(i)
+      ? "Belum hadir"
+      : LATE_ROWS.has(i)
+        ? "Terlambat"
+        : "Hadir";
 
     return {
       id: i + 1,
@@ -169,11 +177,13 @@ export const demoParticipants: Participant[] = Array.from(
       code: `UX3-${(i * 997 + 3127).toString(36).toUpperCase().padStart(4, "0")}`,
       phone: `0812-${1000 + i * 37}-${1000 + i * 53}`,
       registeredAt: registeredAt.toISOString(),
-      status: ABSENT_ROWS.has(i)
-        ? "Belum hadir"
-        : LATE_ROWS.has(i)
-          ? "Terlambat"
-          : "Hadir",
+      checkedInAt:
+        status === "Belum hadir"
+          ? null
+          : status === "Terlambat"
+            ? `09:${pad(5 + Math.floor(i / 5) * 6)}`
+            : `08:${pad(10 + (i * 7) % 45)}`,
+      status,
     };
   },
 );
