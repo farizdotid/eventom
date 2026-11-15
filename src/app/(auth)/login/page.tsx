@@ -98,9 +98,11 @@ export default function LoginPage({
         </button>
       </form>
 
-      <p className="mt-5 text-center text-[11px] text-[#A8A3B5]">
-        Sesi demo disimpan di cookie browser, tidak dikirim ke server mana pun.
-      </p>
+      {isDemoMode() && (
+        <p className="mt-5 text-center text-[11px] text-[#A8A3B5]">
+          Sesi demo disimpan di cookie browser, tidak dikirim ke server mana pun.
+        </p>
+      )}
     </AuthShell>
   );
 }

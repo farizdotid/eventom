@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { AttendanceDonut, EnrollmentTrend, SparkBars } from "@/components/dashboard-charts";
 import { DashboardGuard } from "@/components/dashboard-guard";
+import { isDemoMode } from "@/lib/demo";
+import { getMyEvent } from "@/lib/supabase/queries/events";
 import {
   demoAttendance,
   demoCertificate,
@@ -28,6 +30,32 @@ function initials(name: string) {
     .join("");
 }
 
+function EventPill({ name, status }: { name: string; status?: string }) {
+  return (
+    <div className="flex items-center gap-2 rounded-full border border-[#EDE9F7] bg-white py-1.5 pl-3 pr-1.5 text-sm">
+      <span className="size-2 rounded-full bg-[#22C55E]" />
+      <span className="font-medium text-[#3B3647]">{name}</span>
+      {status && (
+        <span className="rounded-full bg-[#E9F9EF] px-2.5 py-1 text-[11px] font-medium text-[#16A34A]">
+          {status}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** Nama event dari database; data dummy cuma dipakai kalau demo mode nyala. */
+async function EventPillLive() {
+  const event = await getMyEvent();
+  if (event) return <EventPill name={event.name} status={event.status} />;
+
+  return isDemoMode() ? (
+    <EventPill name={demoEvent.name} status={demoEvent.status} />
+  ) : (
+    <EventPill name="Belum ada event" />
+  );
+}
+
 export default function DashboardPage() {
   const quotaFilled = Math.round((demoRegistrants.count / demoRegistrants.quota) * 100);
   const certificateProgress = Math.round(
@@ -43,13 +71,11 @@ export default function DashboardPage() {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-[26px] font-semibold tracking-tight">Ringkasan</h1>
-          <div className="flex items-center gap-2 rounded-full border border-[#EDE9F7] bg-white py-1.5 pl-3 pr-1.5 text-sm">
-            <span className="size-2 rounded-full bg-[#22C55E]" />
-            <span className="font-medium text-[#3B3647]">{demoEvent.name}</span>
-            <span className="rounded-full bg-[#E9F9EF] px-2.5 py-1 text-[11px] font-medium text-[#16A34A]">
-              {demoEvent.status}
-            </span>
-          </div>
+          <Suspense
+            fallback={<div className="h-9 w-44 animate-pulse rounded-full bg-white" />}
+          >
+            <EventPillLive />
+          </Suspense>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { AUTH_INPUT, AuthShell } from "@/components/auth-shell";
+import { isDemoMode } from "@/lib/demo";
 import { signup } from "../login/actions";
 
 // Shows `?error=` / `?message=` set by the signup action.
@@ -60,6 +61,19 @@ export default function SignupPage({ searchParams }: PageProps<"/signup">) {
 
       <form action={signup} className="space-y-4">
         <label className="block">
+          <span className="mb-1.5 block text-xs font-medium text-[#6B6578]">
+            Nama lengkap
+          </span>
+          <input
+            name="full_name"
+            required
+            autoComplete="name"
+            placeholder="Nama kamu"
+            className={AUTH_INPUT}
+          />
+        </label>
+
+        <label className="block">
           <span className="mb-1.5 block text-xs font-medium text-[#6B6578]">Email</span>
           <input
             name="email"
@@ -94,10 +108,12 @@ export default function SignupPage({ searchParams }: PageProps<"/signup">) {
         </button>
       </form>
 
-      <p className="mt-5 text-[11px] leading-relaxed text-[#A8A3B5]">
-        Di mode demo, signup hanya menerima data tanpa disimpan. Akun asli butuh
-        koneksi Supabase.
-      </p>
+      {isDemoMode() && (
+        <p className="mt-5 text-[11px] leading-relaxed text-[#A8A3B5]">
+          Di mode demo, signup hanya menerima data tanpa disimpan. Akun asli butuh
+          koneksi Supabase.
+        </p>
+      )}
     </AuthShell>
   );
 }

@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import type { Database } from "@/types/database.types";
 
 /**
@@ -8,6 +9,11 @@ import type { Database } from "@/types/database.types";
  *   const supabase = await createClient();
  */
 export async function createClient() {
+  // Penanda render waktu-request. Tanpa ini, Next 16 (cacheComponents)
+  // menganggap panggilan Date.now() di dalam auth Supabase sebagai bagian
+  // prerender dan menggagalkan route ("unstable value Date.now()").
+  await connection();
+
   const cookieStore = await cookies();
 
   return createServerClient<Database>(

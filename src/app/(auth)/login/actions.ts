@@ -36,6 +36,7 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
+  const fullName = String(formData.get("full_name") ?? "").trim();
 
   if (isDemoMode()) {
     // Demo: any email works, nothing is stored.
@@ -50,6 +51,8 @@ export async function signup(formData: FormData) {
     email,
     password,
     options: {
+      // Dibaca trigger handle_new_user() untuk mengisi profiles.full_name.
+      data: { full_name: fullName },
       // Where the confirmation email link sends the user (see auth/callback).
       // Add this URL to Supabase Dashboard > Authentication > URL Configuration.
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
@@ -67,7 +70,9 @@ export async function signup(formData: FormData) {
   }
 
   // Email confirmation ON: user must click the link in their inbox first.
-  redirect("/signup?message=Check your email to confirm your account");
+  redirect(
+    `/signup?message=${encodeURIComponent("Cek email untuk konfirmasi akun, lalu masuk.")}`,
+  );
 }
 
 /** Sign out, clear the session cookies, then go back to /login. */
