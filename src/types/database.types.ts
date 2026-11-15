@@ -145,6 +145,10 @@ export type Database = {
         Args: { p_slug: string; p_code: string };
         Returns: Json;
       };
+      verify_certificate: {
+        Args: { p_code: string };
+        Returns: Json;
+      };
     };
     Enums: {
       [_ in never]: never;

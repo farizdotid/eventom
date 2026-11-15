@@ -8,8 +8,10 @@ SQL di sini di-paste manual ke **Supabase Dashboard → SQL Editor**, urut nama 
 2. `migrations/20261116090000_init_events.sql` — tabel `events`
 3. `migrations/20261116090100_init_participants.sql` — tabel `participants`
 4. `migrations/20261116090200_init_certificates.sql` — tabel `certificates`
-5. `seed.sql` — contoh event (jalankan setelah punya akun, boleh dilewati)
-6. `seed-participants.sql` — 48 peserta contoh untuk event `uiux-batch-3` (opsional)
+5. `migrations/20261116090300_public_check_in.sql` — RPC `public_event()` + `check_in()`
+6. `migrations/20261116090400_verify_certificate.sql` — RPC `verify_certificate()`
+7. `seed.sql` — contoh event (jalankan setelah punya akun, boleh dilewati)
+8. `seed-participants.sql` — 48 peserta contoh untuk event `uiux-batch-3` (opsional)
 
 Semua file idempotent (`create table if not exists`, `drop policy if exists`),
 aman di-paste ulang.
@@ -29,6 +31,11 @@ aman di-paste ulang.
 - `src/types/database.types.ts` masih ditulis tangan. Kalau punya Supabase CLI:
   `npx supabase gen types typescript --linked > src/types/database.types.ts`
 - Lalu `npx tsc --noEmit`.
+
+## Halaman publik
+
+- `/checkin/<slug>` — peserta scan QR, masukkan kode unik. Tanpa login, lewat RPC `check_in()`.
+- `/verify/<kode>` — cek keaslian sertifikat; nomor dihitung dari urutan pendaftaran, lewat RPC `verify_certificate()`.
 
 ## Auth
 

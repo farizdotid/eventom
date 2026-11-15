@@ -84,7 +84,7 @@ function CertificatePreview({ config }: { config: CertificateConfig }) {
       {config.rules.showVerification && (
         <div className="absolute bottom-4 right-4 text-center">
           <QRCodeSVG
-            value={`https://eventom.id/verify/${demoCertificateSample.code}`}
+            value={`${process.env.NEXT_PUBLIC_SITE_URL ?? "https://eventom.id"}/verify/${demoCertificateSample.code}`}
             size={40}
             bgColor="transparent"
             fgColor="#171321"
