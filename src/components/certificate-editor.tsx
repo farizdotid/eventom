@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { saveCertificate } from "@/app/dashboard/sertifikat/actions";
 import { Field, Toggle } from "@/components/form-controls";
 import {
   CERTIFICATE_TEMPLATES,
@@ -97,8 +98,25 @@ function CertificatePreview({ config }: { config: CertificateConfig }) {
   );
 }
 
-export function CertificateEditor() {
-  const [config, setConfig] = useState<CertificateConfig>(demoCertificateConfig);
+export function CertificateEditor({
+  initialConfig = demoCertificateConfig,
+}: {
+  initialConfig?: CertificateConfig;
+}) {
+  const [config, setConfig] = useState<CertificateConfig>(initialConfig);
+  const [pending, startTransition] = useTransition();
+  const [notice, setNotice] = useState<{ ok: boolean; text: string } | null>(null);
+
+  function save() {
+    startTransition(async () => {
+      const result = await saveCertificate(config);
+      setNotice(
+        result.ok
+          ? { ok: true, text: "Sertifikat tersimpan." }
+          : { ok: false, text: result.error },
+      );
+    });
+  }
 
   function patch(key: keyof CertificateConfig, value: CertificateConfig[keyof CertificateConfig]) {
     setConfig((prev) => ({ ...prev, [key]: value }));
@@ -125,19 +143,32 @@ export function CertificateEditor() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-[26px] font-semibold tracking-tight">Sertifikat</h1>
         <div className="flex items-center gap-2">
+          {notice && (
+            <span
+              className={`hidden text-xs sm:inline ${
+                notice.ok ? "text-[#16A34A]" : "text-[#DC2626]"
+              }`}
+            >
+              {notice.text}
+            </span>
+          )}
           <button
             type="button"
-            onClick={() => setConfig(demoCertificateConfig)}
+            onClick={() => {
+              setConfig(initialConfig);
+              setNotice(null);
+            }}
             className="rounded-full border border-[#EDE9F7] bg-white px-4 py-2 text-sm font-medium text-[#3B3647] hover:bg-[#FBFAFE]"
           >
             Reset
           </button>
           <button
             type="button"
-            title="Belum tersambung ke backend"
-            className="rounded-full bg-[#6D4AFF] px-4 py-2 text-sm font-medium text-white hover:bg-[#5B3AEB]"
+            onClick={save}
+            disabled={pending}
+            className="rounded-full bg-[#6D4AFF] px-4 py-2 text-sm font-medium text-white hover:bg-[#5B3AEB] disabled:opacity-60"
           >
-            Simpan Perubahan
+            {pending ? "Menyimpan..." : "Simpan Perubahan"}
           </button>
         </div>
       </div>

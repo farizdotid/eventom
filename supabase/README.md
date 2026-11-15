@@ -9,6 +9,7 @@ SQL di sini di-paste manual ke **Supabase Dashboard → SQL Editor**, urut nama 
 3. `migrations/20261116090100_init_participants.sql` — tabel `participants`
 4. `migrations/20261116090200_init_certificates.sql` — tabel `certificates`
 5. `seed.sql` — contoh event (jalankan setelah punya akun, boleh dilewati)
+6. `seed-participants.sql` — 48 peserta contoh untuk event `uiux-batch-3` (opsional)
 
 Semua file idempotent (`create table if not exists`, `drop policy if exists`),
 aman di-paste ulang.
@@ -19,6 +20,7 @@ aman di-paste ulang.
 | --- | --- |
 | `supabase/migrations/` | SQL versioned, urut nama file |
 | `supabase/seed.sql` | Data contoh, dijalankan manual |
+| `supabase/seed-participants.sql` | Peserta contoh, opsional |
 | `supabase/functions/` | Edge functions. Belum dipakai — check-in publik cukup RPC, jadi folder ini kosong sampai benar-benar butuh |
 | `src/lib/supabase/queries/` | Query yang dipakai app (server-side), ikut typecheck Next |
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { saveLanding } from "@/app/dashboard/landing/actions";
 import { LandingPreview } from "@/components/landing-preview";
 import { Field, Toggle } from "@/components/form-controls";
 import {
@@ -14,9 +15,22 @@ const CARD = "rounded-2xl border border-[#EDE9F7] bg-white p-5";
 const INP =
   "w-full rounded-lg border border-[#EDE9F7] bg-white px-3 py-2.5 text-sm outline-none placeholder:text-[#A8A3B5] focus:border-[#C9B6FF]";
 
-export function LandingEditor() {
-  const [data, setData] = useState<LandingData>(demoLanding);
+export function LandingEditor({ initialData = demoLanding }: { initialData?: LandingData }) {
+  const [data, setData] = useState<LandingData>(initialData);
   const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
+  const [pending, startTransition] = useTransition();
+  const [notice, setNotice] = useState<{ ok: boolean; text: string } | null>(null);
+
+  function save() {
+    startTransition(async () => {
+      const result = await saveLanding(data);
+      setNotice(
+        result.ok
+          ? { ok: true, text: "Landing tersimpan." }
+          : { ok: false, text: result.error },
+      );
+    });
+  }
 
   function patch<K extends keyof LandingData>(key: K, value: LandingData[K]) {
     setData((prev) => ({ ...prev, [key]: value }));
@@ -61,19 +75,32 @@ export function LandingEditor() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-[26px] font-semibold tracking-tight">Landing Page</h1>
         <div className="flex items-center gap-2">
+          {notice && (
+            <span
+              className={`hidden text-xs sm:inline ${
+                notice.ok ? "text-[#16A34A]" : "text-[#DC2626]"
+              }`}
+            >
+              {notice.text}
+            </span>
+          )}
           <button
             type="button"
-            onClick={() => setData(demoLanding)}
+            onClick={() => {
+              setData(initialData);
+              setNotice(null);
+            }}
             className="rounded-full border border-[#EDE9F7] bg-white px-4 py-2 text-sm font-medium text-[#3B3647] hover:bg-[#FBFAFE]"
           >
             Reset
           </button>
           <button
             type="button"
-            title="Belum tersambung ke backend"
-            className="rounded-full bg-[#6D4AFF] px-4 py-2 text-sm font-medium text-white hover:bg-[#5B3AEB]"
+            onClick={save}
+            disabled={pending}
+            className="rounded-full bg-[#6D4AFF] px-4 py-2 text-sm font-medium text-white hover:bg-[#5B3AEB] disabled:opacity-60"
           >
-            Simpan &amp; Publikasikan
+            {pending ? "Menyimpan..." : "Simpan & Publikasikan"}
           </button>
         </div>
       </div>

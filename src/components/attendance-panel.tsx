@@ -1,15 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
-import { demoParticipants } from "@/lib/demo-data";
-
-const CHECKIN_URL = "https://eventom.id/checkin/uiux-b3";
+import { checkIn } from "@/app/dashboard/presensi/actions";
+import type { ParticipantRow } from "@/lib/supabase/queries/participants";
 
 type LogEntry = {
-  id: number;
+  id: string;
   name: string;
-  org: string;
+  org: string | null;
   code: string;
   time: string;
   status: "Tepat waktu" | "Terlambat";
@@ -25,17 +25,12 @@ const AVATARS = [
 
 const pad = (value: number) => String(value).padStart(2, "0");
 
-const INITIAL_LOG: LogEntry[] = demoParticipants
-  .filter((person) => person.checkedInAt)
-  .map((person): LogEntry => ({
-    id: person.id,
-    name: person.name,
-    org: person.org,
-    code: person.code,
-    time: person.checkedInAt as string,
-    status: person.status === "Terlambat" ? "Terlambat" : "Tepat waktu",
-  }))
-  .sort((a, b) => b.time.localeCompare(a.time));
+const clock = new Intl.DateTimeFormat("id-ID", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+  timeZone: "Asia/Jakarta",
+});
 
 const STEPS = [
   "Peserta scan QR di lokasi acara.",
@@ -51,17 +46,41 @@ function initials(name: string) {
     .slice(0, 2);
 }
 
-export function AttendancePanel() {
+export function AttendancePanel({
+  participants,
+  checkinUrl,
+}: {
+  participants: ParticipantRow[];
+  checkinUrl: string;
+}) {
+  const router = useRouter();
   const [active, setActive] = useState(true);
   const [token, setToken] = useState("");
   const [updatedAt, setUpdatedAt] = useState("08:00");
   const [fullscreen, setFullscreen] = useState(false);
-  const [log, setLog] = useState<LogEntry[]>(INITIAL_LOG);
   const [query, setQuery] = useState("");
   const [code, setCode] = useState("");
   const [feedback, setFeedback] = useState<{ ok: boolean; text: string } | null>(null);
+  const [pending, startTransition] = useTransition();
 
-  const qrValue = token ? `${CHECKIN_URL}?t=${token}` : CHECKIN_URL;
+  const log = useMemo<LogEntry[]>(
+    () =>
+      participants
+        .filter((person) => person.checkedInAt)
+        .map((person): LogEntry => ({
+          id: person.id,
+          name: person.name,
+          org: person.org,
+          code: person.code,
+          time: clock.format(new Date(person.checkedInAt as string)),
+          status: person.status === "Terlambat" ? "Terlambat" : "Tepat waktu",
+        }))
+        .sort((a, b) => b.time.localeCompare(a.time)),
+    [participants],
+  );
+
+  const qrValue = token ? `${checkinUrl}?t=${token}` : checkinUrl;
+  const qrLabel = checkinUrl.replace(/^https?:\/\//, "");
 
   const attended = log.length;
   const late = log.filter((entry) => entry.status === "Terlambat").length;
@@ -80,43 +99,21 @@ export function AttendancePanel() {
     setUpdatedAt(`${pad(now.getHours())}:${pad(now.getMinutes())}`);
   }
 
-  function checkIn(event: React.FormEvent<HTMLFormElement>) {
+  function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const value = code.trim().toUpperCase();
     if (!value) return;
 
-    const person = demoParticipants.find(
-      (participant) => participant.code.toUpperCase() === value,
-    );
-
-    if (!person) {
-      setFeedback({ ok: false, text: "Kode unik tidak ditemukan." });
-      return;
-    }
-
-    if (log.some((entry) => entry.id === person.id)) {
-      setFeedback({ ok: false, text: `${person.name} sudah check-in.` });
-      return;
-    }
-
-    const now = new Date();
-    const minutes = now.getHours() * 60 + now.getMinutes();
-    const status: LogEntry["status"] =
-      minutes > 8 * 60 + 30 ? "Terlambat" : "Tepat waktu";
-
-    setLog((prev) => [
-      {
-        id: person.id,
-        name: person.name,
-        org: person.org,
-        code: person.code,
-        time: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
-        status,
-      },
-      ...prev,
-    ]);
-    setCode("");
-    setFeedback({ ok: true, text: `${person.name} tercatat ${status.toLowerCase()}.` });
+    startTransition(async () => {
+      const result = await checkIn(value);
+      if (result.ok) {
+        setCode("");
+        setFeedback({ ok: true, text: result.text });
+        router.refresh();
+      } else {
+        setFeedback({ ok: false, text: result.error });
+      }
+    });
   }
 
   return (
@@ -127,7 +124,7 @@ export function AttendancePanel() {
           <div className="text-right">
             <p>
               <span className="text-xl font-semibold">{attended}</span>
-              <span className="text-sm text-[#A8A3B5]"> / {demoParticipants.length}</span>
+              <span className="text-sm text-[#A8A3B5]"> / {participants.length}</span>
             </p>
             <p className="text-[11px] text-[#8F8A9E]">peserta hadir</p>
           </div>
@@ -176,7 +173,7 @@ export function AttendancePanel() {
             </div>
 
             <p className="mt-4 text-center text-[11px] font-medium text-[#3B3647]">
-              eventom.id/checkin/uiux-b3
+              {qrLabel}
             </p>
             <p className="mt-0.5 text-center text-[11px] text-[#A8A3B5]">
               Diperbarui pukul {updatedAt}
@@ -218,9 +215,11 @@ export function AttendancePanel() {
             <h2 className="text-sm font-semibold">Simulasi check-in</h2>
             <p className="mt-1 text-xs text-[#8F8A9E]">
               Masukkan kode unik seperti yang dilakukan peserta setelah scan. Contoh:{" "}
-              <span className="font-mono text-[#6D4AFF]">UX3-BDJG</span>
+              <span className="font-mono text-[#6D4AFF]">
+                {participants[0]?.code ?? "UX3-XXXX"}
+              </span>
             </p>
-            <form onSubmit={checkIn} className="mt-3 flex gap-2">
+            <form onSubmit={submit} className="mt-3 flex gap-2">
               <input
                 value={code}
                 onChange={(event) => {
@@ -232,9 +231,10 @@ export function AttendancePanel() {
               />
               <button
                 type="submit"
-                className="rounded-lg bg-[#171321] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#2A2438]"
+                disabled={pending}
+                className="rounded-lg bg-[#171321] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#2A2438] disabled:opacity-60"
               >
-                Check-In
+                {pending ? "..." : "Check-In"}
               </button>
             </form>
             {feedback && (
@@ -277,16 +277,16 @@ export function AttendancePanel() {
           </div>
 
           <ul className="mt-2 max-h-[560px] divide-y divide-[#F6F3FC] overflow-y-auto pr-1">
-            {visible.map((entry) => (
+            {visible.map((entry, i) => (
               <li key={entry.id} className="flex items-center gap-3 py-2.5">
                 <span
-                  className={`grid size-8 shrink-0 place-items-center rounded-full text-[10px] font-semibold ${AVATARS[entry.id % AVATARS.length]}`}
+                  className={`grid size-8 shrink-0 place-items-center rounded-full text-[10px] font-semibold ${AVATARS[i % AVATARS.length]}`}
                 >
                   {initials(entry.name)}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[13px] font-medium">{entry.name}</p>
-                  <p className="truncate text-[11px] text-[#8F8A9E]">{entry.org}</p>
+                  <p className="truncate text-[11px] text-[#8F8A9E]">{entry.org ?? "-"}</p>
                 </div>
                 <span className="hidden shrink-0 rounded-md bg-[#F6F3FC] px-2 py-1 font-mono text-[10px] text-[#6B6578] sm:block">
                   {entry.code}
@@ -325,7 +325,7 @@ export function AttendancePanel() {
             level="M"
             className="h-auto w-full max-w-[320px]"
           />
-          <p className="text-center text-sm font-medium">eventom.id/checkin/uiux-b3</p>
+          <p className="text-center text-sm font-medium">{qrLabel}</p>
           <button
             type="button"
             onClick={() => setFullscreen(false)}

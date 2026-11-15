@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { demoParticipants, type ParticipantStatus } from "@/lib/demo-data";
+import type { ParticipantRow } from "@/lib/supabase/queries/participants";
+import type { ParticipantStatus } from "@/types/database.types";
 
 const PAGE_SIZE = 10;
 
@@ -24,14 +25,14 @@ const dateFormat = new Intl.DateTimeFormat("id-ID", {
   day: "numeric",
   month: "short",
   year: "numeric",
-  timeZone: "UTC",
+  timeZone: "Asia/Jakarta",
 });
 
 const timeFormat = new Intl.DateTimeFormat("id-ID", {
   hour: "2-digit",
   minute: "2-digit",
   hour12: false,
-  timeZone: "UTC",
+  timeZone: "Asia/Jakarta",
 });
 
 const TABS = ["Semua", "Hadir", "Belum hadir"] as const;
@@ -45,32 +46,36 @@ function initials(name: string) {
     .slice(0, 2);
 }
 
-export function ParticipantsTable() {
+export function ParticipantsTable({
+  participants,
+}: {
+  participants: ParticipantRow[];
+}) {
   const [tab, setTab] = useState<Tab>("Semua");
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
 
   const counts = useMemo(
     () => ({
-      Semua: demoParticipants.length,
-      Hadir: demoParticipants.filter((p) => p.status !== "Belum hadir").length,
-      "Belum hadir": demoParticipants.filter((p) => p.status === "Belum hadir").length,
+      Semua: participants.length,
+      Hadir: participants.filter((p) => p.status !== "Belum hadir").length,
+      "Belum hadir": participants.filter((p) => p.status === "Belum hadir").length,
     }),
-    [],
+    [participants],
   );
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return demoParticipants.filter((p) => {
+    return participants.filter((p) => {
       const matchTab =
         tab === "Semua" ||
         (tab === "Hadir" ? p.status !== "Belum hadir" : p.status === "Belum hadir");
       const matchQuery =
         !needle ||
-        `${p.name} ${p.email} ${p.org}`.toLowerCase().includes(needle);
+        `${p.name} ${p.email} ${p.org ?? ""}`.toLowerCase().includes(needle);
       return matchTab && matchQuery;
     });
-  }, [tab, query]);
+  }, [participants, tab, query]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
@@ -143,7 +148,7 @@ export function ParticipantsTable() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((person) => (
+            {rows.map((person, i) => (
               <tr key={person.id} className="border-b border-[#F6F3FC]">
                 <td className="hidden py-3 pl-4 sm:table-cell">
                   <input
@@ -155,7 +160,7 @@ export function ParticipantsTable() {
                 <td className="py-3 pl-4 pr-3 sm:pl-0 sm:pr-4">
                   <div className="flex items-center gap-2.5">
                     <span
-                      className={`grid size-8 shrink-0 place-items-center rounded-full text-[10px] font-semibold ${AVATARS[person.id % AVATARS.length]}`}
+                      className={`grid size-8 shrink-0 place-items-center rounded-full text-[10px] font-semibold ${AVATARS[i % AVATARS.length]}`}
                     >
                       {initials(person.name)}
                     </span>
@@ -166,7 +171,7 @@ export function ParticipantsTable() {
                   </div>
                 </td>
                 <td className="hidden max-w-[180px] py-3 pr-4 md:table-cell">
-                  <span className="block truncate text-xs text-[#4B4657]">{person.org}</span>
+                  <span className="block truncate text-xs text-[#4B4657]">{person.org ?? "-"}</span>
                 </td>
                 <td className="hidden py-3 pr-4 lg:table-cell">
                   <span className="rounded-md bg-[#F6F3FC] px-2 py-1 font-mono text-[10px] text-[#6B6578]">
@@ -174,7 +179,7 @@ export function ParticipantsTable() {
                   </span>
                 </td>
                 <td className="hidden py-3 pr-4 text-xs text-[#4B4657] xl:table-cell">
-                  {person.phone}
+                  {person.phone ?? "-"}
                 </td>
                 <td className="hidden whitespace-nowrap py-3 pr-4 sm:table-cell">
                   <p className="text-xs">{dateFormat.format(new Date(person.registeredAt))}</p>
