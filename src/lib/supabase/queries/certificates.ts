@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { mergeCertificateConfig } from "@/lib/certificate";
 import { demoCertificateConfig, type CertificateConfig } from "@/lib/demo-data";
 import { getMyEvent } from "@/lib/supabase/queries/events";
 import { createClient } from "@/lib/supabase/server";
@@ -23,15 +24,10 @@ export const getCertificate = cache(async (): Promise<CertificateState> => {
     .eq("event_id", event.id)
     .maybeSingle();
 
-  const saved = (data?.config ?? {}) as Partial<CertificateConfig>;
-
   return {
-    config: {
-      ...demoCertificateConfig,
-      ...saved,
-      signers: saved.signers ?? demoCertificateConfig.signers,
-      rules: { ...demoCertificateConfig.rules, ...saved.rules },
-    },
+    config: mergeCertificateConfig(
+      (data?.config ?? null) as Partial<CertificateConfig> | null,
+    ),
     issued: data?.issued ?? 0,
   };
 });

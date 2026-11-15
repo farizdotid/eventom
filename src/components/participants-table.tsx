@@ -198,8 +198,10 @@ export function ParticipantsTable({
                   {person.status === "Belum hadir" ? (
                     <span className="text-[11px] text-[#A8A3B5]">Belum tersedia</span>
                   ) : (
-                    <button
-                      type="button"
+                    <a
+                      href={`/sertifikat/${encodeURIComponent(person.code)}`}
+                      target="_blank"
+                      rel="noreferrer"
                       aria-label={`Unduh sertifikat ${person.name}`}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-[#EDE9F7] bg-white px-2.5 py-1.5 text-[11px] font-medium text-[#6D4AFF] hover:bg-[#F7F4FF]"
                     >
@@ -207,7 +209,7 @@ export function ParticipantsTable({
                         <path d="M12 4v10m0 0 4-4m-4 4-4-4M5 19h14" />
                       </svg>
                       <span className="hidden sm:inline">Unduh</span>
-                    </button>
+                    </a>
                   )}
                 </td>
               </tr>

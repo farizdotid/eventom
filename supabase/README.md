@@ -11,8 +11,9 @@ SQL di sini di-paste manual ke **Supabase Dashboard → SQL Editor**, urut nama 
 5. `migrations/20261116090300_public_check_in.sql` — RPC `public_event()` + `check_in()`
 6. `migrations/20261116090400_verify_certificate.sql` — RPC `verify_certificate()`
 7. `migrations/20261116090500_public_landing.sql` — RPC `public_event()` (versi landing) + `register_participant()`
-8. `seed.sql` — contoh event (jalankan setelah punya akun, boleh dilewati)
-9. `seed-participants.sql` — 48 peserta contoh untuk event `uiux-batch-3` (opsional)
+8. `migrations/20261116090600_verify_certificate_config.sql` — `verify_certificate()` ikut mengirim `config` sertifikat
+9. `seed.sql` — contoh event (jalankan setelah punya akun, boleh dilewati)
+10. `seed-participants.sql` — 48 peserta contoh untuk event `uiux-batch-3` (opsional)
 
 Semua file idempotent (`create table if not exists`, `drop policy if exists`),
 aman di-paste ulang.
@@ -38,6 +39,7 @@ aman di-paste ulang.
 - `/e/<slug>` — landing page acara dari `events.config.landing` + form pendaftaran. Submit → RPC `register_participant()` (cek kuota, email duplikat, buat kode unik).
 - `/checkin/<slug>` — peserta scan QR, masukkan kode unik. Tanpa login, lewat RPC `check_in()`.
 - `/verify/<kode>` — cek keaslian sertifikat; nomor dihitung dari urutan pendaftaran, lewat RPC `verify_certificate()`.
+- `/sertifikat/<kode>` — versi cetak sertifikat (A4 landscape), tombol "Cetak / Simpan PDF" pakai `window.print()`. Menolak kode peserta yang belum check-in (aturan `rules.attendedOnly`).
 
 ## Auth
 

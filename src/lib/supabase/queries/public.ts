@@ -1,4 +1,5 @@
-import type { LandingData } from "@/lib/demo-data";
+import type { CertificateConfig, LandingData } from "@/lib/demo-data";
+import { mergeCertificateConfig } from "@/lib/certificate";
 import { mergeLanding } from "@/lib/landing";
 import { createClient } from "@/lib/supabase/server";
 import type { Json } from "@/types/database.types";
@@ -15,7 +16,15 @@ export type PublicEvent = {
 };
 
 export type CertificateCheck =
-  | { ok: true; name: string; eventName: string; number: string; issueDate: string | null; status: string }
+  | {
+      ok: true;
+      name: string;
+      eventName: string;
+      number: string;
+      issueDate: string | null;
+      status: string;
+      config: CertificateConfig;
+    }
   | { ok: false; message: string };
 
 /** Info acara untuk halaman publik (lewat RPC, bukan tabel langsung). */
@@ -84,7 +93,8 @@ export async function registerParticipant(input: {
   };
 }
 
-/** Cek keaslian sertifikat dari kode peserta (lewat RPC). */export async function verifyCertificate(
+/** Cek keaslian sertifikat dari kode peserta (lewat RPC). */
+export async function verifyCertificate(
   code: string,
 ): Promise<CertificateCheck> {
   const trimmed = code.trim();
@@ -117,5 +127,10 @@ export async function registerParticipant(input: {
     number: String(raw.number),
     issueDate: typeof raw.issue_date === "string" ? raw.issue_date : null,
     status: String(raw.status),
+    config: mergeCertificateConfig(
+      raw.config && typeof raw.config === "object"
+        ? (raw.config as Partial<CertificateConfig>)
+        : null,
+    ),
   };
 }
