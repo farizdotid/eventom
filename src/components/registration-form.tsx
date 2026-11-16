@@ -32,6 +32,7 @@ export function RegistrationForm({
         email: String(formData.get("email") ?? ""),
         org: String(formData.get("org") ?? ""),
         phone: String(formData.get("phone") ?? ""),
+        job: String(formData.get("job") ?? ""),
       });
 
       setResult(response);
@@ -116,6 +117,20 @@ export function RegistrationForm({
             Instansi / kampus
           </span>
           <input name="org" autoComplete="organization" className={INPUT} />
+        </label>
+      )}
+
+      {fields.job && (
+        <label className="block">
+          <span className="mb-1 block text-xs font-medium text-[#4B4657]">
+            Pekerjaan
+          </span>
+          <input
+            name="job"
+            autoComplete="organization-title"
+            placeholder="Mahasiswa, desainer, ..."
+            className={INPUT}
+          />
         </label>
       )}
 

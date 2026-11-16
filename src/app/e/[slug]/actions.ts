@@ -12,6 +12,7 @@ export async function submitRegistration(input: {
   email: string;
   org?: string;
   phone?: string;
+  job?: string;
 }): Promise<RegistrationResult> {
   if (!input.slug) return { ok: false, message: "Acara tidak dikenal." };
 

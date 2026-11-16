@@ -80,6 +80,7 @@ export type Database = {
           email: string;
           org: string | null;
           phone: string | null;
+          job: string | null;
           code: string;
           status: ParticipantStatus;
           checked_in_at: string | null;
@@ -92,6 +93,7 @@ export type Database = {
           email: string;
           org?: string | null;
           phone?: string | null;
+          job?: string | null;
           code: string;
           status?: ParticipantStatus;
           checked_in_at?: string | null;
@@ -104,6 +106,7 @@ export type Database = {
           email?: string;
           org?: string | null;
           phone?: string | null;
+          job?: string | null;
           code?: string;
           status?: ParticipantStatus;
           checked_in_at?: string | null;
@@ -156,6 +159,7 @@ export type Database = {
           p_email: string;
           p_org?: string | null;
           p_phone?: string | null;
+          p_job?: string | null;
         };
         Returns: Json;
       };

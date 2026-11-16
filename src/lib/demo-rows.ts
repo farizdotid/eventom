@@ -12,6 +12,7 @@ export function demoParticipantRows(): ParticipantRow[] {
     email: person.email,
     org: person.org,
     phone: person.phone,
+    job: null,
     code: person.code,
     status: person.status,
     registeredAt: new Date(

@@ -62,6 +62,7 @@ export async function registerParticipant(input: {
   email: string;
   org?: string;
   phone?: string;
+  job?: string;
 }): Promise<RegistrationResult> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("register_participant", {
@@ -70,6 +71,7 @@ export async function registerParticipant(input: {
     p_email: input.email,
     p_org: input.org ?? null,
     p_phone: input.phone ?? null,
+    p_job: input.job ?? null,
   });
 
   if (error || !data) {

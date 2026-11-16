@@ -172,6 +172,9 @@ export function ParticipantsTable({
                 </td>
                 <td className="hidden max-w-[180px] py-3 pr-4 md:table-cell">
                   <span className="block truncate text-xs text-[#4B4657]">{person.org ?? "-"}</span>
+                  {person.job && (
+                    <span className="block truncate text-[11px] text-[#8F8A9E]">{person.job}</span>
+                  )}
                 </td>
                 <td className="hidden py-3 pr-4 lg:table-cell">
                   <span className="rounded-md bg-[#F6F3FC] px-2 py-1 font-mono text-[10px] text-[#6B6578]">

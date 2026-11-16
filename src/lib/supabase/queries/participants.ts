@@ -10,6 +10,7 @@ export type ParticipantRow = {
   email: string;
   org: string | null;
   phone: string | null;
+  job: string | null;
   code: string;
   status: ParticipantStatus;
   registeredAt: string;
@@ -28,7 +29,7 @@ export const getParticipants = cache(async (): Promise<ParticipantRow[]> => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("participants")
-    .select("id, name, email, org, phone, code, status, registered_at, checked_in_at")
+    .select("id, name, email, org, phone, job, code, status, registered_at, checked_in_at")
     .eq("event_id", event.id)
     .order("registered_at", { ascending: false });
 
@@ -38,6 +39,7 @@ export const getParticipants = cache(async (): Promise<ParticipantRow[]> => {
     email: row.email,
     org: row.org,
     phone: row.phone,
+    job: row.job,
     code: row.code,
     status: row.status,
     registeredAt: row.registered_at,
