@@ -13,8 +13,9 @@ SQL di sini di-paste manual ke **Supabase Dashboard → SQL Editor**, urut nama 
 7. `migrations/20261116090500_public_landing.sql` — RPC `public_event()` (versi landing) + `register_participant()`
 8. `migrations/20261116090600_verify_certificate_config.sql` — `verify_certificate()` ikut mengirim `config` sertifikat
 9. `migrations/20261116090700_participant_job.sql` — kolom `participants.job` + `register_participant()` menerima `p_job`
-10. `seed.sql` — contoh event (jalankan setelah punya akun, boleh dilewati)
-11. `seed-participants.sql` — 48 peserta contoh untuk event `uiux-batch-3` (opsional)
+10. `migrations/20261116090800_participant_code_prefix.sql` — kode peserta berformat `<PREFIX>-XXXX`
+11. `seed.sql` — contoh event (jalankan setelah punya akun, boleh dilewati)
+12. `seed-participants.sql` — 48 peserta contoh untuk event `uiux-batch-3` (opsional)
 
 Semua file idempotent (`create table if not exists`, `drop policy if exists`),
 aman di-paste ulang.
@@ -41,6 +42,20 @@ aman di-paste ulang.
 - `/checkin/<slug>` — peserta scan QR, masukkan kode unik. Tanpa login, lewat RPC `check_in()`.
 - `/verify/<kode>` — cek keaslian sertifikat; nomor dihitung dari urutan pendaftaran, lewat RPC `verify_certificate()`.
 - `/sertifikat/<kode>` — versi cetak sertifikat (A4 landscape), tombol "Cetak / Simpan PDF" pakai `window.print()`. Menolak kode peserta yang belum check-in (aturan `rules.attendedOnly`).
+
+## Format kode peserta
+
+`register_participant()` menghasilkan `<PREFIX>-XXXX`, contoh `UX3-11ST`.
+Prefix diambil dari `events.config.registration.codePrefix`; kalau kosong, dari 3 karakter
+alfanumerik pertama slug (`uiux-batch-3` → `UIU`). Untuk menyamakan dengan data contoh:
+
+```sql
+update public.events
+set config = jsonb_set(coalesce(config, '{}'::jsonb), '{registration,codePrefix}', '"UX3"')
+where slug = 'uiux-batch-3';
+```
+
+Kode 4 karakter tanpa prefix tetap valid saat check-in dan verifikasi.
 
 ## Auth
 
