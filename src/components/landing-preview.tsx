@@ -106,20 +106,29 @@ export function LandingPreview({ data }: { data: LandingData }) {
           )}
         </div>
 
-        <div className="grid aspect-[4/3] place-items-center rounded-lg border border-dashed border-[#D9CFEF] bg-[#FBFAFE]">
-          <div className="text-center text-[7px] text-[#A8A3B5]">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.5}
-              className="mx-auto mb-1 size-4"
-              aria-hidden
-            >
-              <path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-13Zm0 10.5 4.5-4.5a2 2 0 0 1 2.8 0L15 16m-1-2.5 1.7-1.7a2 2 0 0 1 2.8 0L21 14.3" />
-            </svg>
-            Banner visual
-          </div>
+        <div className="grid aspect-[4/3] place-items-center overflow-hidden rounded-lg border border-dashed border-[#D9CFEF] bg-[#FBFAFE]">
+          {data.event.banner ? (
+            // eslint-disable-next-line @next/next/no-img-element -- URL dinamis dari Storage
+            <img
+              src={data.event.banner}
+              alt=""
+              className="size-full object-cover"
+            />
+          ) : (
+            <div className="text-center text-[7px] text-[#A8A3B5]">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.5}
+                className="mx-auto mb-1 size-4"
+                aria-hidden
+              >
+                <path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-13Zm0 10.5 4.5-4.5a2 2 0 0 1 2.8 0L15 16m-1-2.5 1.7-1.7a2 2 0 0 1 2.8 0L21 14.3" />
+              </svg>
+              Banner visual
+            </div>
+          )}
         </div>
       </div>
 

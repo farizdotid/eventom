@@ -114,6 +114,8 @@ export type LandingData = {
     endTime: string;
     format: string;
     location: string;
+    /** URL banner dari Storage; kosong = pakai placeholder. */
+    banner?: string;
   };
   about: { description: string; learn: string };
   speaker: { name: string; role: string; bio: string };

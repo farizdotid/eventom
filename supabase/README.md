@@ -15,8 +15,9 @@ SQL di sini di-paste manual ke **Supabase Dashboard → SQL Editor**, urut nama 
 9. `migrations/20261116090700_participant_job.sql` — kolom `participants.job` + `register_participant()` menerima `p_job`
 10. `migrations/20261116090800_participant_code_prefix.sql` — kode peserta berformat `<PREFIX>-XXXX`
 11. `migrations/20261116090900_certificate_number_seq.sql` — nomor sertifikat dibekukan di `participants.cert_seq`
-12. `seed.sql` — contoh event (jalankan setelah punya akun, boleh dilewati)
-13. `seed-participants.sql` — 48 peserta contoh untuk event `uiux-batch-3` (opsional)
+12. `migrations/20261116091000_storage_event_assets.sql` — bucket Storage `event-assets` (banner acara, maks 5 MB)
+13. `seed.sql` — contoh event (jalankan setelah punya akun, boleh dilewati)
+14. `seed-participants.sql` — 48 peserta contoh untuk event `uiux-batch-3` (opsional)
 
 Semua file idempotent (`create table if not exists`, `drop policy if exists`),
 aman di-paste ulang.
@@ -29,6 +30,7 @@ aman di-paste ulang.
 | `supabase/seed.sql` | Data contoh, dijalankan manual |
 | `supabase/seed-participants.sql` | Peserta contoh, opsional |
 | `supabase/functions/` | Edge functions. Belum dipakai — check-in publik cukup RPC, jadi folder ini kosong sampai benar-benar butuh |
+| `storage` bucket `event-assets` | Aset acara (banner). Publik baca; tulis hanya pemilik event, di folder `<event_id>/` |
 | `src/lib/supabase/queries/` | Query yang dipakai app (server-side), ikut typecheck Next |
 
 ## Setelah schema berubah

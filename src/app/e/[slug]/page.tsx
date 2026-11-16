@@ -125,14 +125,23 @@ async function LandingContent({ params }: { params: Promise<{ slug: string }> })
           )}
         </div>
 
-        <div className="grid aspect-[4/3] place-items-center rounded-2xl border border-dashed border-[#D9CFEF] bg-[var(--soft)]">
-          <div className="text-center">
-            <span className="mx-auto mb-2 grid size-10 place-items-center rounded-xl bg-white text-sm font-semibold text-[var(--accent)]">
-              {initials(data.event.name)}
-            </span>
-            <p className="text-xs text-[#8F8A9E]">Banner acara menyusul</p>
+        {data.event.banner ? (
+          // eslint-disable-next-line @next/next/no-img-element -- URL dinamis dari Storage
+          <img
+            src={data.event.banner}
+            alt={`Banner ${data.event.name}`}
+            className="aspect-[4/3] w-full rounded-2xl border border-[#EDE9F7] object-cover"
+          />
+        ) : (
+          <div className="grid aspect-[4/3] place-items-center rounded-2xl border border-dashed border-[#D9CFEF] bg-[var(--soft)]">
+            <div className="text-center">
+              <span className="mx-auto mb-2 grid size-10 place-items-center rounded-xl bg-white text-sm font-semibold text-[var(--accent)]">
+                {initials(data.event.name)}
+              </span>
+              <p className="text-xs text-[#8F8A9E]">Banner acara belum diunggah</p>
+            </div>
           </div>
-        </div>
+        )}
       </section>
 
       <section className="border-t border-[#F3F0FA]">

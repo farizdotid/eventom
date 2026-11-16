@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { saveLanding } from "@/app/dashboard/landing/actions";
+import { BannerUpload } from "@/components/banner-upload";
 import { LandingPreview } from "@/components/landing-preview";
 import { Field, Toggle } from "@/components/form-controls";
 import {
@@ -18,9 +19,11 @@ const INP =
 export function LandingEditor({
   initialData = demoLanding,
   slug,
+  eventId,
 }: {
   initialData?: LandingData;
   slug?: string;
+  eventId?: string;
 }) {
   const [data, setData] = useState<LandingData>(initialData);
   const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
@@ -221,9 +224,19 @@ export function LandingEditor({
                 />
               </Field>
             </div>
-            <p className="mt-3 text-xs text-[#A8A3B5]">
-              Banner diunggah langsung di pratinjau.
-            </p>
+            <div className="mt-3">
+              {eventId ? (
+                <BannerUpload
+                  eventId={eventId}
+                  value={data.event.banner}
+                  onChange={(url) => patchGroup("event", "banner", url)}
+                />
+              ) : (
+                <p className="text-xs text-[#A8A3B5]">
+                  Unggah banner hanya tersedia saat terhubung ke Supabase.
+                </p>
+              )}
+            </div>
           </section>
 
           <section className={CARD}>

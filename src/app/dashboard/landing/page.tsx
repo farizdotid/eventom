@@ -11,7 +11,7 @@ async function LandingContent() {
   }
 
   const [data, event] = await Promise.all([getLanding(), getMyEvent()]);
-  return <LandingEditor initialData={data} slug={event?.slug} />;
+  return <LandingEditor initialData={data} slug={event?.slug} eventId={event?.id} />;
 }
 
 export default function LandingPageSetup() {
