@@ -16,8 +16,9 @@ SQL di sini di-paste manual ke **Supabase Dashboard → SQL Editor**, urut nama 
 10. `migrations/20261116090800_participant_code_prefix.sql` — kode peserta berformat `<PREFIX>-XXXX`
 11. `migrations/20261116090900_certificate_number_seq.sql` — nomor sertifikat dibekukan di `participants.cert_seq`
 12. `migrations/20261116091000_storage_event_assets.sql` — bucket Storage `event-assets` (banner acara, maks 5 MB)
-13. `seed.sql` — contoh event (jalankan setelah punya akun, boleh dilewati)
-14. `seed-participants.sql` — 48 peserta contoh untuk event `uiux-batch-3` (opsional)
+13. `migrations/20261116091100_registration_window.sql` — `register_participant()` menolak pendaftaran kalau acara sudah selesai atau batas daftar lewat
+14. `seed.sql` — contoh event (jalankan setelah punya akun, boleh dilewati)
+15. `seed-participants.sql` — 48 peserta contoh untuk event `uiux-batch-3` (opsional)
 
 Semua file idempotent (`create table if not exists`, `drop policy if exists`),
 aman di-paste ulang.
@@ -42,6 +43,16 @@ aman di-paste ulang.
 ## Halaman publik
 
 - `/e/<slug>` — landing page acara dari `events.config.landing` + form pendaftaran. Submit → RPC `register_participant()` (cek kuota, email duplikat, buat kode unik).
+
+## Tutup pendaftaran
+
+Dicek dobel: `registrationWindow()` di `src/lib/landing.ts` (hanya tampilan) dan
+`register_participant()` di DB (penegakan). Form dan CTA disembunyikan begitu
+acara lewat `landing.event.date` + `endTime` (WIB) atau tanggal
+`landing.registration.deadline` sudah lewat.
+
+Kalau tanggal/jam di config kosong atau rusak, pengecekan DB dilewati supaya
+pendaftaran tidak mati gara-gara config setengah jadi.
 - `/checkin/<slug>` — peserta scan QR, masukkan kode unik. Tanpa login, lewat RPC `check_in()`.
 - `/verify/<kode>` — cek keaslian sertifikat; nomor dihitung dari urutan pendaftaran, lewat RPC `verify_certificate()`.
 - `/sertifikat/<kode>` — versi cetak sertifikat (A4 landscape), tombol "Cetak / Simpan PDF" pakai `window.print()`. Menolak kode peserta yang belum check-in (aturan `rules.attendedOnly`).

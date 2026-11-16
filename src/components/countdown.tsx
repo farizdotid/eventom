@@ -2,8 +2,24 @@
 
 import { useEffect, useState } from "react";
 
-/** Hitung mundur ke waktu mulai acara (WIB). Render kosong sampai client siap. */
-export function Countdown({ date, time }: { date: string; time: string }) {
+const LABELS = ["hari", "jam", "menit", "detik"];
+
+/**
+ * Hitung mundur ke waktu mulai acara (WIB).
+ * - Sebelum mulai: empat kotak angka.
+ * - Sedang berlangsung: keterangan singkat.
+ * - Sudah selesai: tidak dirender (status sudah ditampilkan di hero).
+ * Kosong sampai client siap supaya tidak ada hydration mismatch.
+ */
+export function Countdown({
+  date,
+  time,
+  endTime,
+}: {
+  date: string;
+  time: string;
+  endTime?: string;
+}) {
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
@@ -13,8 +29,22 @@ export function Countdown({ date, time }: { date: string; time: string }) {
     return () => clearInterval(id);
   }, []);
 
-  const target = new Date(`${date}T${time}:00+07:00`).getTime();
-  const diff = now === null ? 0 : Math.max(0, target - now);
+  const start = new Date(`${date}T${time}:00+07:00`).getTime();
+  const end = new Date(`${date}T${endTime || time}:00+07:00`).getTime();
+
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return null;
+  if (now === null) return <div className="h-[54px]" />;
+  if (now >= end) return null;
+
+  if (now >= start) {
+    return (
+      <p className="rounded-xl bg-[var(--soft)] px-4 py-2.5 text-sm font-medium text-[var(--accent)]">
+        Acara sedang berlangsung
+      </p>
+    );
+  }
+
+  const diff = start - now;
   const parts = [
     Math.floor(diff / 86_400_000),
     Math.floor(diff / 3_600_000) % 24,
@@ -22,17 +52,17 @@ export function Countdown({ date, time }: { date: string; time: string }) {
     Math.floor(diff / 1000) % 60,
   ].map((value) => String(value).padStart(2, "0"));
 
-  const labels = ["hari", "jam", "menit", "detik"];
-
   return (
-    <div className="flex gap-2">
+    <div className="grid w-full max-w-[320px] grid-cols-4 gap-1.5 sm:max-w-[280px] sm:gap-2">
       {parts.map((value, i) => (
         <div
-          key={labels[i]}
-          className="min-w-14 rounded-xl border border-[#EDE9F7] bg-white px-2 py-1.5 text-center"
+          key={LABELS[i]}
+          className="rounded-xl border border-[#EDE9F7] bg-white px-1 py-1.5 text-center sm:px-2"
         >
-          <p className="text-base font-semibold tabular-nums leading-none">{value}</p>
-          <p className="mt-1 text-[10px] text-[#8F8A9E]">{labels[i]}</p>
+          <p className="text-sm font-semibold tabular-nums leading-none sm:text-base">
+            {value}
+          </p>
+          <p className="mt-1 text-[10px] text-[#8F8A9E]">{LABELS[i]}</p>
         </div>
       ))}
     </div>
