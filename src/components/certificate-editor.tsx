@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { saveCertificate } from "@/app/dashboard/sertifikat/actions";
+import { AssetUpload } from "@/components/asset-upload";
 import { Field, Toggle } from "@/components/form-controls";
 import {
   CERTIFICATE_TEMPLATES,
@@ -26,26 +27,14 @@ function CertificatePreview({ config }: { config: CertificateConfig }) {
       style={{ background: theme.background }}
     >
       <div className="flex items-center justify-center gap-3">
-        {["Logo", "Logo mitra"].map((label) => (
-          <div
-            key={label}
-            className="grid h-11 w-24 place-items-center rounded-md border border-dashed border-[#C9BFDC] text-[8px] text-[#8F8A9E]"
-          >
-            <div>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.4}
-                className="mx-auto mb-0.5 size-3"
-                aria-hidden
-              >
-                <path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-13Zm0 10.5 4.5-4.5a2 2 0 0 1 2.8 0L15 16m-1-2.5 1.7-1.7a2 2 0 0 1 2.8 0L21 14.3" />
-              </svg>
-              {label}
-            </div>
+        {config.logo ? (
+          // eslint-disable-next-line @next/next/no-img-element -- URL dinamis dari Storage
+          <img src={config.logo} alt="Logo" className="h-11 w-auto object-contain" />
+        ) : (
+          <div className="grid h-11 w-24 place-items-center rounded-md border border-dashed border-[#C9BFDC] text-[8px] text-[#8F8A9E]">
+            Logo
           </div>
-        ))}
+        )}
       </div>
 
       <h3
@@ -72,9 +61,18 @@ function CertificatePreview({ config }: { config: CertificateConfig }) {
       <div className="mt-4 flex items-center justify-center gap-4 sm:gap-10">
         {config.signers.map((signer) => (
           <div key={signer.name} className="text-center">
-            <div className="grid h-10 w-20 place-items-center rounded-md border border-dashed border-[#C9BFDC] text-[8px] text-[#8F8A9E] sm:w-24">
-              TTD
-            </div>
+            {signer.signature ? (
+              // eslint-disable-next-line @next/next/no-img-element -- URL dinamis dari Storage
+              <img
+                src={signer.signature}
+                alt=""
+                className="mx-auto h-10 w-20 object-contain sm:w-24"
+              />
+            ) : (
+              <div className="grid h-10 w-20 place-items-center rounded-md border border-dashed border-[#C9BFDC] text-[8px] text-[#8F8A9E] sm:w-24">
+                TTD
+              </div>
+            )}
             <p className="mt-1.5 text-[8px] font-semibold">{signer.name}</p>
             <p className="text-[7px] text-[#8F8A9E]">{signer.role}</p>
           </div>
@@ -100,8 +98,10 @@ function CertificatePreview({ config }: { config: CertificateConfig }) {
 
 export function CertificateEditor({
   initialConfig = demoCertificateConfig,
+  eventId,
 }: {
   initialConfig?: CertificateConfig;
+  eventId?: string;
 }) {
   const [config, setConfig] = useState<CertificateConfig>(initialConfig);
   const [pending, startTransition] = useTransition();
@@ -122,7 +122,7 @@ export function CertificateEditor({
     setConfig((prev) => ({ ...prev, [key]: value }));
   }
 
-  function patchSigner(index: number, key: "name" | "role", value: string) {
+  function patchSigner(index: number, key: "name" | "role" | "signature", value: string) {
     setConfig((prev) => ({
       ...prev,
       signers: prev.signers.map((signer, i) =>
@@ -273,13 +273,42 @@ export function CertificateEditor({
                       onChange={(event) => patchSigner(index, "role", event.target.value)}
                     />
                   </Field>
+                  <div className="sm:col-span-1">
+                    {eventId ? (
+                      <AssetUpload
+                        eventId={eventId}
+                        kind={`ttd-${index + 1}`}
+                        label="tanda tangan"
+                        value={signer.signature}
+                        onChange={(url) => patchSigner(index, "signature", url)}
+                      />
+                    ) : (
+                      <p className="text-xs text-[#A8A3B5]">
+                        Unggah tanda tangan hanya tersedia saat terhubung ke Supabase.
+                      </p>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
-            <p className="mt-3 text-xs text-[#A8A3B5]">
-              Tanda tangan dan logo diunggah langsung di pratinjau. Seret file PNG
-              transparan ke kotak yang tersedia.
-            </p>
+            <div className="mt-4 border-t border-[#F7F4FD] pt-4">
+              <p className="text-xs font-medium text-[#4B4657]">Logo penyelenggara</p>
+              <div className="mt-2">
+                {eventId ? (
+                  <AssetUpload
+                    eventId={eventId}
+                    kind="logo"
+                    label="logo"
+                    value={config.logo}
+                    onChange={(url) => patch("logo", url)}
+                  />
+                ) : (
+                  <p className="text-xs text-[#A8A3B5]">
+                    Unggah logo hanya tersedia saat terhubung ke Supabase.
+                  </p>
+                )}
+              </div>
+            </div>
           </section>
 
           <section className={CARD}>

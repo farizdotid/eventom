@@ -6,13 +6,20 @@ import { createClient } from "@/lib/supabase/client";
 const MAX_BYTES = 5 * 1024 * 1024;
 const TYPES = ["image/png", "image/jpeg", "image/webp"];
 
-/** Unggah banner ke bucket `event-assets/<event_id>/`, lalu kembalikan URL publiknya. */
-export function BannerUpload({
+/**
+ * Unggah gambar ke bucket `event-assets/<event_id>/<kind>-<timestamp>.<ext>`
+ * lalu kirim URL publiknya ke pemanggil. Dipakai banner, logo, dan tanda tangan.
+ */
+export function AssetUpload({
   eventId,
+  kind,
+  label,
   value,
   onChange,
 }: {
   eventId: string;
+  kind: string;
+  label: string;
   value?: string;
   onChange: (url: string) => void;
 }) {
@@ -35,7 +42,7 @@ export function BannerUpload({
 
     const supabase = createClient();
     const ext = file.name.split(".").pop()?.toLowerCase() || "png";
-    const path = `${eventId}/banner-${Date.now()}.${ext}`;
+    const path = `${eventId}/${kind}-${Date.now()}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from("event-assets")
@@ -61,7 +68,7 @@ export function BannerUpload({
           onClick={() => inputRef.current?.click()}
           className="rounded-full border border-[#EDE9F7] bg-white px-3.5 py-2 text-xs font-medium text-[#3B3647] hover:bg-[#FBFAFE] disabled:opacity-60"
         >
-          {busy ? "Mengunggah..." : value ? "Ganti banner" : "Unggah banner"}
+          {busy ? "Mengunggah..." : value ? `Ganti ${label}` : `Unggah ${label}`}
         </button>
         {value && (
           <button
@@ -92,14 +99,12 @@ export function BannerUpload({
         // eslint-disable-next-line @next/next/no-img-element -- URL dinamis dari Storage
         <img
           src={value}
-          alt="Banner acara"
-          className="mt-2 aspect-[4/3] w-full max-w-[240px] rounded-xl border border-[#EDE9F7] object-cover"
+          alt={label}
+          className="mt-2 max-h-24 w-auto rounded-lg border border-[#EDE9F7] bg-white object-contain p-1"
         />
       ) : null}
 
-      {error && (
-        <p className="mt-2 text-[11px] text-[#DC2626]">{error}</p>
-      )}
+      {error && <p className="mt-2 text-[11px] text-[#DC2626]">{error}</p>}
     </div>
   );
 }

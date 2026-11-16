@@ -4,13 +4,15 @@ import { DashboardGuard } from "@/components/dashboard-guard";
 import { isDemoMode } from "@/lib/demo";
 import { demoCertificateConfig } from "@/lib/demo-data";
 import { getCertificate } from "@/lib/supabase/queries/certificates";
+import { getMyEvent } from "@/lib/supabase/queries/events";
 
 async function CertificateContent() {
-  const initialConfig = isDemoMode()
-    ? demoCertificateConfig
-    : (await getCertificate()).config;
+  if (isDemoMode()) {
+    return <CertificateEditor initialConfig={demoCertificateConfig} />;
+  }
 
-  return <CertificateEditor initialConfig={initialConfig} />;
+  const [{ config }, event] = await Promise.all([getCertificate(), getMyEvent()]);
+  return <CertificateEditor initialConfig={config} eventId={event?.id} />;
 }
 
 export default function SertifikatPage() {

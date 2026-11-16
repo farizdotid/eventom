@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { saveLanding } from "@/app/dashboard/landing/actions";
-import { BannerUpload } from "@/components/banner-upload";
+import { AssetUpload } from "@/components/asset-upload";
 import { LandingPreview } from "@/components/landing-preview";
 import { Field, Toggle } from "@/components/form-controls";
 import {
@@ -226,8 +226,10 @@ export function LandingEditor({
             </div>
             <div className="mt-3">
               {eventId ? (
-                <BannerUpload
+                <AssetUpload
                   eventId={eventId}
+                  kind="banner"
+                  label="banner"
                   value={data.event.banner}
                   onChange={(url) => patchGroup("event", "banner", url)}
                 />

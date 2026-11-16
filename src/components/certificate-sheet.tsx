@@ -32,15 +32,22 @@ export function CertificateSheet({
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
-          <span
-            className="grid size-7 place-items-center rounded-md text-xs font-semibold text-white"
-            style={{ backgroundColor: template.accent }}
-          >
-            E
-          </span>
-          <span className="text-xs font-semibold tracking-tight text-[#5B5568]">
-            Eventom
-          </span>
+          {config.logo ? (
+            // eslint-disable-next-line @next/next/no-img-element -- URL dinamis dari Storage
+            <img src={config.logo} alt="Logo penyelenggara" className="h-7 w-auto" />
+          ) : (
+            <>
+              <span
+                className="grid size-7 place-items-center rounded-md text-xs font-semibold text-white"
+                style={{ backgroundColor: template.accent }}
+              >
+                E
+              </span>
+              <span className="text-xs font-semibold tracking-tight text-[#5B5568]">
+                Eventom
+              </span>
+            </>
+          )}
         </div>
         <span className="font-mono text-[11px] text-[#8F8A9E]">{number}</span>
       </div>
@@ -72,6 +79,14 @@ export function CertificateSheet({
         <div className="flex gap-10">
           {config.signers.map((signer) => (
             <div key={signer.name} className="text-center">
+              {signer.signature && (
+                // eslint-disable-next-line @next/next/no-img-element -- URL dinamis dari Storage
+                <img
+                  src={signer.signature}
+                  alt=""
+                  className="mx-auto mb-1 h-9 w-32 object-contain"
+                />
+              )}
               <div
                 className="mb-1 h-8 w-32 border-b"
                 style={{ borderColor: `${template.accent}55` }}

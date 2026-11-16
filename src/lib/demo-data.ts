@@ -69,7 +69,9 @@ export type CertificateConfig = {
   description: string;
   numberFormat: string;
   issueDate: string;
-  signers: { name: string; role: string }[];
+  /** URL logo penyelenggara; kosong = pakai logo Eventom. */
+  logo?: string;
+  signers: { name: string; role: string; signature?: string }[];
   rules: { attendedOnly: boolean; selfDownload: boolean; showVerification: boolean };
 };
 
