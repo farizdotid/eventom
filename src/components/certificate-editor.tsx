@@ -152,6 +152,14 @@ export function CertificateEditor({
               {notice.text}
             </span>
           )}
+          <a
+            href="/dashboard/sertifikat/cetak"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-full border border-[#EDE9F7] bg-white px-4 py-2 text-sm font-medium text-[#3B3647] hover:bg-[#FBFAFE]"
+          >
+            Cetak semua
+          </a>
           <button
             type="button"
             onClick={() => {

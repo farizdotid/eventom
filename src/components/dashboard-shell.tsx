@@ -163,18 +163,18 @@ export function DashboardShell({
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[#F7F5FB] text-[#171321]">
+    <div className="flex min-h-screen bg-[#F7F5FB] text-[#171321] print:block print:bg-white">
       {drawerOpen && (
         <button
           type="button"
           aria-label="Tutup menu"
           onClick={() => setDrawerOpen(false)}
-          className="fixed inset-0 z-30 bg-[#171321]/25 lg:hidden"
+          className="fixed inset-0 z-30 bg-[#171321]/25 print:hidden lg:hidden"
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-[236px] flex-col border-r border-[#EDE9F7] bg-white px-4 py-5 transition-[transform,width] duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-[236px] flex-col border-r border-[#EDE9F7] bg-white px-4 py-5 transition-[transform,width] duration-200 print:hidden lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
           drawerOpen ? "translate-x-0" : "-translate-x-full"
         } ${collapsed ? "lg:w-[80px]" : "lg:w-[236px]"}`}
       >
@@ -232,7 +232,7 @@ export function DashboardShell({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-[#EDE9F7] bg-white/85 px-4 py-3 backdrop-blur sm:px-6">
+        <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-[#EDE9F7] bg-white/85 px-4 py-3 backdrop-blur print:hidden sm:px-6">
           <button
             type="button"
             aria-label={drawerOpen ? "Tutup menu" : "Buka menu"}
@@ -273,7 +273,7 @@ export function DashboardShell({
           </div>
         </header>
 
-        <div className="flex-1 px-4 py-6 sm:px-6">{children}</div>
+        <div className="flex-1 px-4 py-6 print:p-0 sm:px-6">{children}</div>
       </div>
     </div>
   );
