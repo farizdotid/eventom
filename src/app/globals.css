@@ -12,12 +12,8 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Aplikasi ini hanya punya tema terang: halaman memakai warna lilac hardcoded,
+   jadi jangan ikut prefers-color-scheme (dark) — teks jadi tak terbaca. */
 
 body {
   background: var(--background);
