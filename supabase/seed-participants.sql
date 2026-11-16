@@ -2,7 +2,7 @@
 -- Sumber: src/lib/demo-data.ts. Aman diulang: conflict pada (event_id, email).
 
 insert into public.participants
-  (event_id, name, email, org, phone, code, status, checked_in_at, registered_at)
+  (event_id, name, email, org, phone, code, status, checked_in_at, registered_at, cert_seq)
 select
   e.id,
   v.name,
@@ -12,7 +12,8 @@ select
   v.code,
   v.status,
   v.checked_in_at,
-  timestamptz '2026-10-29 08:00:00+07' + (v.idx - 1) * interval '9 hours'
+  timestamptz '2026-10-29 08:00:00+07' + (v.idx - 1) * interval '9 hours',
+  v.idx
 from public.events e
 cross join (
   values

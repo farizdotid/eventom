@@ -14,8 +14,9 @@ SQL di sini di-paste manual ke **Supabase Dashboard → SQL Editor**, urut nama 
 8. `migrations/20261116090600_verify_certificate_config.sql` — `verify_certificate()` ikut mengirim `config` sertifikat
 9. `migrations/20261116090700_participant_job.sql` — kolom `participants.job` + `register_participant()` menerima `p_job`
 10. `migrations/20261116090800_participant_code_prefix.sql` — kode peserta berformat `<PREFIX>-XXXX`
-11. `seed.sql` — contoh event (jalankan setelah punya akun, boleh dilewati)
-12. `seed-participants.sql` — 48 peserta contoh untuk event `uiux-batch-3` (opsional)
+11. `migrations/20261116090900_certificate_number_seq.sql` — nomor sertifikat dibekukan di `participants.cert_seq`
+12. `seed.sql` — contoh event (jalankan setelah punya akun, boleh dilewati)
+13. `seed-participants.sql` — 48 peserta contoh untuk event `uiux-batch-3` (opsional)
 
 Semua file idempotent (`create table if not exists`, `drop policy if exists`),
 aman di-paste ulang.

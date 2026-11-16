@@ -11,8 +11,8 @@ import { getParticipants } from "@/lib/supabase/queries/participants";
 
 /**
  * Satu lembar per peserta yang hadir, siap dicetak sekaligus (Save as PDF).
- * Nomor urut dihitung dari urutan `registered_at` — sama seperti hitungan
- * `verify_certificate()` di database.
+ * Nomor urut dibaca dari `participants.cert_seq` (dibekukan saat pendaftaran),
+ * jadi sama persis dengan nomor di halaman verifikasi.
  */
 async function SheetContent() {
   const demo = isDemoMode();
@@ -31,7 +31,6 @@ async function SheetContent() {
         ? -1
         : 1,
   );
-  const rank = new Map(ordered.map((person, index) => [person.id, index + 1]));
 
   const recipients = config.rules.attendedOnly
     ? ordered.filter((person) => person.status !== "Belum hadir")
@@ -51,7 +50,7 @@ async function SheetContent() {
         <div>
           <h1 className="text-[26px] font-semibold tracking-tight">Cetak sertifikat</h1>
           <p className="mt-0.5 text-xs text-[#8F8A9E]">
-            {recipients.length} lembar · A4 landscape · nomor urut dari tanggal daftar
+            {recipients.length} lembar · A4 landscape · nomor urut tetap per peserta
           </p>
         </div>
         <PrintButton label="Cetak semua" />
@@ -71,7 +70,7 @@ async function SheetContent() {
               name={person.name}
               number={config.numberFormat.replace(
                 "{no}",
-                String(rank.get(person.id) ?? 0).padStart(4, "0"),
+                String(person.certSeq ?? 0).padStart(4, "0"),
               )}
               config={config}
               verifyUrl={`${base}/verify/${encodeURIComponent(person.code)}`}

@@ -85,6 +85,7 @@ export type Database = {
           status: ParticipantStatus;
           checked_in_at: string | null;
           registered_at: string;
+          cert_seq: number | null;
         };
         Insert: {
           id?: string;
@@ -98,6 +99,7 @@ export type Database = {
           status?: ParticipantStatus;
           checked_in_at?: string | null;
           registered_at?: string;
+          cert_seq?: number | null;
         };
         Update: {
           id?: string;
@@ -111,6 +113,7 @@ export type Database = {
           status?: ParticipantStatus;
           checked_in_at?: string | null;
           registered_at?: string;
+          cert_seq?: number | null;
         };
         Relationships: [];
       };

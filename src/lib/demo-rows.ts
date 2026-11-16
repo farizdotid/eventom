@@ -6,7 +6,7 @@ import type { ParticipantRow } from "@/lib/supabase/queries/participants";
  * Waktu dummy ditulis sebagai jam WIB; jam check-in ditempel ke tanggal acara.
  */
 export function demoParticipantRows(): ParticipantRow[] {
-  return demoParticipants.map((person) => ({
+  return demoParticipants.map((person, index) => ({
     id: String(person.id),
     name: person.name,
     email: person.email,
@@ -14,6 +14,7 @@ export function demoParticipantRows(): ParticipantRow[] {
     phone: person.phone,
     job: null,
     code: person.code,
+    certSeq: index + 1,
     status: person.status,
     registeredAt: new Date(
       new Date(person.registeredAt).getTime() - 7 * 3_600_000,

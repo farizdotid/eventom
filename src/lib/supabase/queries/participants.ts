@@ -15,6 +15,8 @@ export type ParticipantRow = {
   status: ParticipantStatus;
   registeredAt: string;
   checkedInAt: string | null;
+  /** Nomor urut sertifikat, dibekukan saat pendaftaran. */
+  certSeq: number | null;
 };
 
 /**
@@ -29,7 +31,9 @@ export const getParticipants = cache(async (): Promise<ParticipantRow[]> => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("participants")
-    .select("id, name, email, org, phone, job, code, status, registered_at, checked_in_at")
+    .select(
+      "id, name, email, org, phone, job, code, status, registered_at, checked_in_at, cert_seq",
+    )
     .eq("event_id", event.id)
     .order("registered_at", { ascending: false });
 
@@ -44,5 +48,6 @@ export const getParticipants = cache(async (): Promise<ParticipantRow[]> => {
     status: row.status,
     registeredAt: row.registered_at,
     checkedInAt: row.checked_in_at,
+    certSeq: row.cert_seq,
   }));
 });
